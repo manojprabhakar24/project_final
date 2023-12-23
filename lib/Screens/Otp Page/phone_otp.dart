@@ -1,233 +1,426 @@
-import 'dart:math';
+
+
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:twilio_flutter/twilio_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:http/http.dart' as http;
 
 import '../ConfirmationPage/confirm.dart';
+import 'auth_service.dart';
 
 
-
-class Service {
-  final String name;
-  final double price;
-
-  Service({
-    required this.name,
-    required this.price,
-    // Other properties of the Service class can be added here
-  });
-}
-
-class MyHomePage extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   final DateTime selectedDate;
-
   final List<String> selectedTimeSlots;
-  final List<Service> selectedServices;
-  const MyHomePage ({
+
+  const LoginPage({
     Key? key, required this.selectedDate,
-    required this.selectedTimeSlots,
-    required this.selectedServices,}):
+    required this.selectedTimeSlots,}):
         super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  bool _showOTPDialog = false;
-  static const String countryCode = '+91';
-  String errorMessage = '';
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneNumberController =
-  TextEditingController(text: countryCode);
-  final TextEditingController otpController = TextEditingController();
-  TwilioFlutter twilioFlutter = TwilioFlutter(
-    accountSid: 'AC45d39b3d898206fef90d4ed67fb4a7bc',
-    authToken: '2a51cc575335861d62065ad93ab47a67',
-    twilioNumber: '+12816168209',
-  );
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  bool _isButtonPressed = false;
 
-  String generatedOTP = '';
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _otpController = TextEditingController();
 
-  String generateOTP() {
-    int otpLength = 6;
-    String otp = '';
-    for (int i = 0; i < otpLength; i++) {
-      otp += Random().nextInt(9).toString();
-    }
-    return otp;
+
+  final _formKey = GlobalKey<FormState>();
+  final _formKey1 = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this);
+
+
+  }
+  void sendMessagesToEnteredNumber() async {
+    String phoneNumber = '+91' + _phoneController.text.trim();
+    String messageBody =
+        'Your scissors saloon appointment is scheduled for  ${widget.selectedDate.toString()} at ${widget.selectedTimeSlots.join(", ")}. Name: ${_nameController.text}, Phone: ${_phoneController.text}';
+    sendSMS(messageBody, phoneNumber);
   }
 
+  void sendSMS(String messageBody, String phoneNumber) async {
+    final accountSid = 'AC45d39b3d898206fef90d4ed67fb4a7bc'; // Replace with your Twilio Account SID
+    final authToken = '2a51cc575335861d62065ad93ab47a67'; // Replace with your Twilio Auth Token
+    final twilioNumber = '+12816168209'; // Replace with your Twilio phone number
 
-  void sendOTP() {
-    String name = nameController.text.trim();
-    String phoneNumber = phoneNumberController.text.trim();
-    generatedOTP = generateOTP(); // Save the generated OTP
+    final Uri uri = Uri.parse(
+        'https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json');
 
-    try {
-      twilioFlutter.sendSMS(
-        toNumber: phoneNumber,
-        messageBody: 'Hi $name, your OTP for verification is: $generatedOTP',
-      );
-      print('OTP sent successfully!');
-
-      // Show OTP verification dialog after sending OTP
-      showOTPDialog();
-    } catch (e) {
-      print('Failed to send OTP: $e');
-    }
-  }
-
-  Future<void> verifyOTPInDialog() async {
-    String enteredOTP = otpController.text.trim();
-    if (enteredOTP == generatedOTP) {
-      String enteredName = nameController.text.trim();
-      String enteredPhoneNumber = phoneNumberController.text.trim();
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Create a reference to a collection
-      CollectionReference bookings = firestore.collection('bookings');
-
-      try {
-        // Add data to Firestore
-        await bookings.add({
-          'name': enteredName,
-          'phoneNumber': enteredPhoneNumber,
-          'selectedDate': widget.selectedDate,
-          'selectedTimeSlots': widget.selectedTimeSlots,
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfirmationScreen(
-              name: enteredName,
-              phoneNumber: enteredPhoneNumber,
-              selectedDate: widget.selectedDate,
-              selectedTimeSlots: widget.selectedTimeSlots,
-            ),
-          ),
-        );
-      } catch (e) {
-        // Handle Firestore errors
-        print('Failed to store data in Firestore: $e');
-      }
-    } else {
-      setState(() {
-        // Update UI to display incorrect OTP message
-        errorMessage = 'Incorrect OTP!';
-        _showOTPDialog = false;
-      });
-      print('Incorrect OTP!');
-    }
-  }
-
-  void showOTPDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Enter OTP'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextField(
-                controller: otpController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Enter OTP',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: verifyOTPInDialog,
-                child: Text('Verify'),
-              ),
-            ],
-          ),
-        );
+    final response = await http.post(
+      uri,
+      headers: <String, String>{
+        'Authorization': 'Basic ' +
+            base64Encode(utf8.encode('$accountSid:$authToken')),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: <String, String>{
+        'From': twilioNumber,
+        'To': phoneNumber,
+        'Body': messageBody,
       },
     );
+
+    if (response.statusCode == 201) {
+      print('SMS sent successfully');
+    } else {
+      print('Failed to send SMS: ${response.statusCode}');
+      print(response.body);
+    }
   }
 
   @override
   void dispose() {
-    nameController.dispose();
-    phoneNumberController.dispose();
-    otpController.dispose();
+    _controller.dispose();
     super.dispose();
+  }
+  void _saveData() {
+    print("Attempting to save data...");
+    String text1 = _nameController.text;
+    String text2 = _phoneController.text;
+
+    print("Name: $text1");
+    print("Phone: $text2");
+
+    Timestamp timestamp = Timestamp.fromDate(widget.selectedDate);
+
+    FirebaseFirestore.instance.collection('userData').add({
+      'name': text1,
+      'phoneNumber': text2,
+      'selectedDate': timestamp,
+      'selectedTimeSlots': widget.selectedTimeSlots,
+    })
+        .then((value) {
+      print("Data saved successfully!");
+    })
+        .catchError((error) {
+      print("Failed to save data: $error");
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build (BuildContext context) {
     return Scaffold(
+        body: Stack(
 
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Enter Name',
-                  border: OutlineInputBorder(),
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/background.jpg'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: phoneNumberController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Enter Phone Number',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a phone number';
-                        } else if (!value.startsWith('+91')) {
-                          return 'Please enter a valid Indian phone number';
-                        }
-                        return null;
-                      },
-                    ),
+                child:Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(255, 255, 255, 0.7),
                   ),
-                ],
-              ),
-              SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Form is valid, perform actions here
-                        sendOTP();
-                      }
-                    },
-                    child: Text('Send OTP'),
-                  ),
-                ],
-              ),
+                  // Change the background color her
 
-            ],
-          ),
-        ),
-      ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(padding: EdgeInsets.symmetric(vertical: 30)),
+                              Image.asset(
+                                'assets/Scissors-image-remove.png',
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.contain,
+                              ),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(padding: EdgeInsets.symmetric(horizontal: 9)),
+                                    Text("Scissor's",style: GoogleFonts.openSans(
+                                      textStyle: TextStyle(
+                                          color: Colors.brown[900],
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                    ),),
+                                  ]),
+                              SizedBox(height: 40),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Enter your Details",
+                                    style: GoogleFonts.openSans(
+                                      textStyle: TextStyle(
+                                          color: Colors.brown[900],
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Center(
+                                child:Container(
+
+                                  constraints: BoxConstraints(maxWidth: 430,maxHeight: 279), // Adjust the maximum width as needed
+                                  child: Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Form(
+                                        key: _formKey,
+                                        child: Column(
+                                            children: [
+                                              TextFormField(
+                                                cursorColor: Colors.brown,
+                                                controller: _nameController,
+                                                keyboardType: TextInputType.text,
+                                                decoration: InputDecoration(
+                                                  labelText: "Enter your name",
+                                                  labelStyle: GoogleFonts.openSans(
+                                                    textStyle: TextStyle(
+                                                        color: Colors.brown[900],
+                                                        fontSize: 15,
+                                                        fontWeight: FontWeight.bold),
+                                                  ),
+
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.brown, width: 1.0),
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.brown, width: 1.0),
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  // Adjust horizontal padding
+                                                ),
+                                                validator: (value) {
+                                                  if (value!.isEmpty) {
+                                                    return "Please enter your name";
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                              SizedBox(height: 10),
+                                              TextFormField(
+                                                cursorColor: Colors.brown,
+                                                controller: _phoneController,
+                                                keyboardType: TextInputType.number,
+                                                decoration: InputDecoration(
+                                                  prefixText: "+91 ",
+                                                  labelText: "Enter your mobile  number",
+                                                  labelStyle: GoogleFonts.openSans(
+                                                    textStyle: TextStyle(
+                                                        color: Colors.brown[900],
+                                                        fontSize: 15,
+                                                        fontWeight: FontWeight.bold),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.brown, width: 1.0),
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.brown, width: 1.0),
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  // Change the cursor color here
+                                                  // Cursor color when the text field is focused
+                                                  focusedErrorBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.brown, width: 1.0),
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  // Change the cursor color
+                                                ),
+                                                validator: (value) {
+                                                  if (value!.isEmpty) {
+                                                    return "Please enter your number";
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                              SizedBox(height: 10),
+                                              SizedBox(
+                                                height: 50,
+                                                width: 150,
+                                                child:ElevatedButton(
+                                                  onPressed: () {
+
+                                                    setState(() {
+                                                      _isButtonPressed = !_isButtonPressed;
+
+
+                                                    });
+                                                    _saveData();
+                                                    if (_formKey.currentState!.validate()) {
+                                                      AuthService.sentOtp(
+                                                        phone: _phoneController.text,
+                                                        errorStep: () {
+                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                "Error in sending OTP",
+                                                                style:  GoogleFonts.openSans(
+                                                                  textStyle: TextStyle(
+                                                                    color: Colors.brown[900],
+                                                                    fontSize: 15,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              backgroundColor: Colors.red,
+                                                            ),
+                                                          );
+                                                        },
+                                                        nextStep: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (context) => AlertDialog(
+                                                              title: Text("OTP Verification"),
+                                                              content: Column(
+                                                                mainAxisSize: MainAxisSize.min,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Text("Enter 6 digit OTP"),
+                                                                  SizedBox(height: 12),
+                                                                  Form(
+                                                                    key: _formKey1,
+                                                                    child: TextFormField(
+                                                                      cursorColor: Colors.brown,
+                                                                      keyboardType: TextInputType.number,
+                                                                      controller: _otpController,
+                                                                      style: TextStyle(color: Colors.brown),
+                                                                      decoration: InputDecoration(
+                                                                        labelText: "Enter OTP",
+                                                                        labelStyle: TextStyle(color: Colors.brown),
+
+                                                                        border: OutlineInputBorder(
+                                                                          borderRadius: BorderRadius.circular(8),
+                                                                        ),
+                                                                        enabledBorder: OutlineInputBorder(
+                                                                          borderSide: BorderSide(color: Colors.brown, width: 1.0),
+                                                                          borderRadius: BorderRadius.circular(8),
+                                                                        ),
+                                                                        focusedBorder: OutlineInputBorder(
+                                                                          borderSide: BorderSide(color: Colors.brown, width: 1.0),
+                                                                          borderRadius: BorderRadius.circular(8),
+                                                                        ),
+                                                                      ),
+                                                                      validator: (value) {
+                                                                        if (value!.length != 6) {
+                                                                          return "Invalid OTP";
+                                                                        }
+                                                                        return null;
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(height: 10),
+                                                                  Row(
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                    children: [
+                                                                      ElevatedButton(
+                                                                        onPressed: () {
+                                                                          sendMessagesToEnteredNumber();
+                                                                          if (_formKey1.currentState!.validate()) {
+                                                                            AuthService.loginWithOtp(
+                                                                              otp: _otpController.text,
+                                                                            ).then((value) {
+                                                                              if (value == "Success") {
+                                                                                Navigator.pop(context); // Close the OTP verification dialog
+                                                                                Navigator.pushReplacement(
+                                                                                  context,
+                                                                                  MaterialPageRoute(
+                                                                                    builder: (context) =>  ConfirmationScreen (name: _nameController.text,
+                                                                                      phoneNumber: _phoneController.text, selectedDate:widget.selectedDate , selectedTimeSlots:widget.selectedTimeSlots ,), // Navigate to the next page on success
+                                                                                  ),
+                                                                                );
+                                                                              } else {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                                  SnackBar(
+                                                                                    content: Text(
+                                                                                      value,
+                                                                                      style: TextStyle(color: Colors.white),
+                                                                                    ),
+                                                                                    backgroundColor: Colors.red,
+                                                                                  ),
+                                                                                );
+                                                                              }
+                                                                            });
+                                                                          }
+                                                                        },
+                                                                        child: Text(
+                                                                          "Submit",
+                                                                          style: GoogleFonts.openSans(
+                                                                            textStyle: TextStyle(
+                                                                              color: Colors.white,
+                                                                              fontSize: 15,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        style: ElevatedButton.styleFrom(
+                                                                          fixedSize: Size(150, 50),
+                                                                          primary: Colors.brown[900],
+
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    }
+                                                  },
+                                                  child: Text(
+                                                    "Send OTP",
+                                                    style: TextStyle(color: Colors.white),
+                                                  ),
+                                                  style: ElevatedButton.styleFrom(
+                                                    primary: _isButtonPressed ? Colors.brown[400] : Colors.brown[900],
+                                                    onPrimary: Colors.black,
+                                                    minimumSize: Size(0, 10),
+                                                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    ),
+                                                  ),
+                                                ),
+
+                                              )]),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]),
+                      ),
+                    ],
+                  ),
+                ),
+
+              ),
+            ]
+        )
     );
   }
 }

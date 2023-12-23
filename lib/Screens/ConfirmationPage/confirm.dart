@@ -84,7 +84,7 @@ class ConfirmationScreen extends StatelessWidget {
                       children: [
                         Padding(padding: EdgeInsets.only(top: 2)),
                         Image.asset(
-                          'assets/tick.png',
+                          'assets/tick.jpg',
                           width: 85,
                           height: 70,
                         ),

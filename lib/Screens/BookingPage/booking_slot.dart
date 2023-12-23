@@ -96,7 +96,7 @@ class _BookingSlotScreenState extends State<BookingSlotScreen> {
             child: Padding(
               padding: const EdgeInsets.only(top: 50),
               child: Container(
-                height: 380,
+                height: 350,
                 width: 500,
                 child: Card(
                   margin: EdgeInsets.all(10),
@@ -298,9 +298,9 @@ class _HorizontalWeekCalendarPackageState extends State<HorizontalWeekCalendarPa
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MyHomePage(
+        builder: (context) => LoginPage(
           selectedDate: widget.selectedDate,
-          selectedTimeSlots: selectedTimeSlots, selectedServices: [],
+          selectedTimeSlots: selectedTimeSlots,
         ),
       ),
     );
