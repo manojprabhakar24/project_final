@@ -50,7 +50,9 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 30),
-                  Icon(Icons.spa_outlined, size: 50,color:Colors.black),
+                  Icon(Icons.spa_outlined, size: 50,color:Colors.black,
+
+                  ),
                   Text(
                     'WELCOME TO SCISSOR\'S SALOON',
                     style: TextStyle(color: Colors.black,fontSize: 25, fontWeight: FontWeight.bold,),
@@ -117,5 +119,5 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-  login() {}
+
 }

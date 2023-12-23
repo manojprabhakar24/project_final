@@ -5,6 +5,7 @@ import 'AdminPanel/Responsive/desktop.dart';
 import 'AdminPanel/Responsive/mobile.dart';
 import 'AdminPanel/Responsive/responsive_layout.dart';
 import 'AdminPanel/Responsive/tablet.dart';
+import 'Screens/LandingScreen/user.dart';
 import 'SplashScreen/splash.dart';
 import 'models/firebase_options.dart';
 
@@ -36,7 +37,7 @@ class _MyAppState extends State<MyApp> {
           mobileBody: MobileScaffold(),
           tabletBody: TabletScaffold(),
           desktopBody: DesktopScaffold(),
-        ) : CustomSplashScreen(),
+        ) : WelcomeScreen(),
 
 
       ),
