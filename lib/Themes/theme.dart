@@ -40,21 +40,12 @@ class AppFonts {
 
   static TextStyle getDescriptionStyle() {
     return GoogleFonts.poppins(
-      fontWeight: FontWeight.bold,color: Colors.white,
+      fontWeight: FontWeight.bold, color: Colors.white,
     );
   }
 
   static TextStyle getTotalPriceStyle() {
     return GoogleFonts.poppins(
-      fontWeight: FontWeight.bold,
-      fontSize: 20,
-    );
-  }
-
-  //For emulator pupose
-
-  static TextStyle getEmulatorHeading() {
-    return GoogleFonts.openSans(
       fontWeight: FontWeight.bold,
       fontSize: 20,
     );

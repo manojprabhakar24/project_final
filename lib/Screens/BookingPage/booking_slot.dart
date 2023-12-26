@@ -96,7 +96,7 @@ class _BookingSlotScreenState extends State<BookingSlotScreen> {
             child: Padding(
               padding: const EdgeInsets.only(top: 50),
               child: Container(
-                height: 350,
+                height: 320,
                 width: 500,
                 child: Card(
                   margin: EdgeInsets.all(10),
