@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -86,7 +87,7 @@ class _Stylist2State extends State<Stylist2> {
               Expanded(
                 child: Center(
                   child: Container(
-                    height: 630,
+                    height: 600,
                     width: 400,
                     child: Card(
                       margin: EdgeInsets.all(20),
@@ -345,13 +346,23 @@ class _HorizontalWeekCalendarPackageState
     );
   }
 
-  void navigateToConfirmationScreen(BuildContext context) {
+  void navigateToConfirmationScreen(BuildContext context) async {
     List<String> selectedTimeSlots = [];
 
     widget.buttonColors.forEach((key, value) {
       if (value == Colors.red) {
         selectedTimeSlots.add(key);
       }
+    });
+
+    // Create a Firestore reference to the collection for Stylist2 bookings
+    CollectionReference bookings = FirebaseFirestore.instance.collection('Stylist2Bookings');
+
+    // Add a new document to the collection
+    await bookings.add({
+      'selectedDate': widget.selectedDate,
+      'selectedTimeSlots': selectedTimeSlots,
+      // Add any other relevant details for the booking here
     });
 
     Navigator.push(
@@ -365,7 +376,8 @@ class _HorizontalWeekCalendarPackageState
     );
   }
 
+}
+
   String formattedDate(DateTime date) {
     return DateFormat.yMMMMd().format(date);
   }
-}

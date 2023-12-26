@@ -67,6 +67,9 @@ flutter:
     - assets/Scissors-image-remove.png
     - assets/shaving.jpeg
     - assets/tick.jpg
+    - assets/vinod.jpg
+    - assets/bhatt.jpg
+    - assets/john dee.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

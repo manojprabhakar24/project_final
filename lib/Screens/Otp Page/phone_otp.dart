@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage>
     FirebaseFirestore.instance.collection('userData').add({
       'name': text1,
       'phoneNumber': text2,
-      'selectedDate': timestamp,
+      'selectedDate': widget.selectedDate,
       'selectedTimeSlots': widget.selectedTimeSlots,
     })
         .then((value) {
