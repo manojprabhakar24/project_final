@@ -73,6 +73,7 @@ class _DashboardState extends State<Dashboard> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
@@ -100,6 +101,7 @@ class _DashboardState extends State<Dashboard> {
                     child: Text('Stylist 1'),
                     style: getStylistButtonStyle(1),
                   ),
+                  SizedBox(width: 10,),
                   ElevatedButton(
                     onPressed: () async {
                       setState(() {
@@ -124,6 +126,7 @@ class _DashboardState extends State<Dashboard> {
                     child: Text('Stylist 2'),
                     style: getStylistButtonStyle(2),
                   ),
+                  SizedBox(width: 10,),
                   ElevatedButton(
                     onPressed: () async {
                       setState(() {
@@ -206,19 +209,50 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
             if (showStylist1Appointments && stylist1Appointments.isEmpty)
-              Text(
-                'No appointments for Stylist 1',
-                style: TextStyle(fontSize: 16),
+              Container(
+                padding: EdgeInsets.only(top: 100),
+                child:
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'No Appointments for Stylist 1',
+                        style: TextStyle(fontSize: 30),
+                      ),
+                    ],
+                  ),
+
               ),
             if (showStylist2Appointments && stylist2Appointments.isEmpty)
-              Text(
-                'No appointments for Stylist 2',
-                style: TextStyle(fontSize: 16),
+              Container(padding: EdgeInsets.only(top: 100),
+                child:
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'No Appointments for Stylist 2',
+                      style: TextStyle(fontSize: 30),
+                    ),
+                  ],
+                ),
+
               ),
             if (showStylist3Appointments && stylist3Appointments.isEmpty)
-              Text(
-                'No appointments for Stylist 3',
-                style: TextStyle(fontSize: 16),
+              Container(padding: EdgeInsets.only(top: 100),
+                child:
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'No Appointments for Stylist 3',
+                      style: TextStyle(fontSize: 30),
+                    ),
+                  ],
+                ),
+
               ),
           ],
         ),

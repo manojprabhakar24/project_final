@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project_final/stylistPage/stylist1.dart';
-import 'package:project_final/stylistPage/stylist2.dart';
-import 'package:project_final/stylistPage/stylist3.dart';
+import 'package:project_final/Screens/BookingPage/stylist1.dart';
+import 'package:project_final/Screens/BookingPage/stylist2.dart';
+import 'package:project_final/Screens/BookingPage/stylist3.dart';
 
 
-import '../models/stylist_data.dart';
+import '../../models/stylist_data.dart';
 
 
 

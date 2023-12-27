@@ -2,27 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../Screens/Otp Page/phone_otp.dart';
+import '../Otp Page/phone_otp.dart';
 
 
 
-void addAppointmentToFirestore(DateTime selectedDate, List<String> selectedTimeSlots) {
-  FirebaseFirestore.instance.collection('appointments').add({
-    'date': selectedDate,
-    'timeSlots': selectedTimeSlots,
-  });
-}
 
-
-
-class Stylist1 extends StatefulWidget {
+class Stylist2 extends StatefulWidget {
   @override
-  _Stylist1State createState() => _Stylist1State();
+  _Stylist2State createState() => _Stylist2State();
 }
 
-class _Stylist1State extends State<Stylist1> {
+class _Stylist2State extends State<Stylist2> {
   DateTime selectedDate = DateTime.now();
   Map<String, Color> buttonColors = {
     '10-11AM': Colors.green,
@@ -99,7 +89,6 @@ class _Stylist1State extends State<Stylist1> {
                     height: 600,
                     width: 400,
                     child: Card(
-                      elevation: 3,
                       margin: EdgeInsets.all(20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
@@ -112,7 +101,7 @@ class _Stylist1State extends State<Stylist1> {
                             child: Column(
                               children: [
                                 Text(
-                                  "Haircut Specialist",
+                                  "Hair color Specialist",
                                   style: GoogleFonts.openSans(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -122,13 +111,13 @@ class _Stylist1State extends State<Stylist1> {
                                   borderRadius: BorderRadius.circular(15),
                                   // Adjust the radius as needed
                                   child: Image.asset(
-                                    "assets/haircuttingsalon.jpg",
+                                    "assets/haircolor.jpeg",
                                     height: 100,
                                     width: 130,
                                   ),
                                 ),
                                 Text(
-                                  "John Dee",
+                                  "Mahesh Bhatt",
                                   style: GoogleFonts.openSans(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -158,7 +147,7 @@ class _Stylist1State extends State<Stylist1> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 5),
+                          SizedBox(height: 10),
                           Center(
                             child: ElevatedButton(
                               onPressed: () {
@@ -217,7 +206,8 @@ class _Stylist1State extends State<Stylist1> {
   void toggleButtonColor(String time) {
     DateTime now = DateTime.now();
     if (buttonColors[time] == Colors.red &&
-        (now.difference(buttonSelectionTimes[time]!) < Duration(hours: 1) ||
+        (now.difference(buttonSelectionTimes[time]!) <
+            const Duration(hours: 1) ||
             now.hour < 12)) {
       setState(() {
         buttonColors[time] = Colors.green;
@@ -286,7 +276,7 @@ class _HorizontalWeekCalendarPackageState
             GoogleFonts.openSans(fontSize: 17, fontWeight: FontWeight.bold),
           ),
           buildTimeSlotsColumn(),
-          SizedBox(height: 5),
+          SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
               navigateToConfirmationScreen(context);
@@ -294,7 +284,8 @@ class _HorizontalWeekCalendarPackageState
             style: ElevatedButton.styleFrom(primary: Colors.brown),
             child: Text(
               'BOOK YOUR APPOINTMENT',
-              style: GoogleFonts.openSans(fontWeight: FontWeight.bold , color: Colors.white),
+              style: GoogleFonts.openSans(fontWeight: FontWeight.bold,color: Colors.white
+              ),
             ),
           ),
         ],
@@ -308,19 +299,18 @@ class _HorizontalWeekCalendarPackageState
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           buildTimeSlotColumn([
             '10-11AM',
             '2-3PM',
             '6-7PM',
           ]),
-          SizedBox(width: 6),
+          SizedBox(width: 5),
           buildTimeSlotColumn([
             '11-12PM',
             '3-4PM',
             '7-8PM',
           ]),
-          SizedBox(width: 6),
+          SizedBox(width: 5),
           buildTimeSlotColumn([
             '12-1PM',
             '4-5PM',
@@ -337,11 +327,11 @@ class _HorizontalWeekCalendarPackageState
           .map(
             (time) => Column(
           children: [
-            SizedBox(height: 5),
+            SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: widget.buttonColors[time],
-                fixedSize: Size(100, 30),
+                fixedSize: Size(80, 35),
               ),
               onPressed: () {
                 widget.onToggleColor(time);
@@ -355,7 +345,7 @@ class _HorizontalWeekCalendarPackageState
     );
   }
 
-  void navigateToConfirmationScreen(BuildContext context) {
+  void navigateToConfirmationScreen(BuildContext context) async {
     List<String> selectedTimeSlots = [];
 
     widget.buttonColors.forEach((key, value) {
@@ -365,7 +355,6 @@ class _HorizontalWeekCalendarPackageState
     });
 
 
-    addAppointmentToFirestore(widget.selectedDate, selectedTimeSlots);
 
     Navigator.push(
       context,
@@ -378,7 +367,8 @@ class _HorizontalWeekCalendarPackageState
     );
   }
 
-  String formattedDate(DateTime date) {
-    return DateFormat.yMMMMd().format(date);
-  }
+}
+
+String formattedDate(DateTime date) {
+  return DateFormat.yMMMMd().format(date);
 }

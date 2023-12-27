@@ -192,7 +192,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                     ),
                   if (showSettings)
                     Expanded(
-                      child: SettingsScreen(),
+                      child: Setting(),
                     )
                 ],
               ),

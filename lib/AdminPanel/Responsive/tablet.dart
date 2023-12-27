@@ -190,7 +190,7 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                     ),
                   if (showSettings)
                     Expanded(
-                      child: SettingsScreen(),
+                      child: Setting(),
                     )
                 ],
               ),

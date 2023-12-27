@@ -6,6 +6,7 @@ import 'AdminPanel/Responsive/mobile.dart';
 import 'AdminPanel/Responsive/responsive_layout.dart';
 import 'AdminPanel/Responsive/tablet.dart';
 import 'Screens/LandingScreen/user.dart';
+
 import 'SplashScreen/splash.dart';
 import 'models/firebase_options.dart';
 
@@ -35,11 +36,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
 
 
-        body: isAdminView ? ResponsiveLayout(
-          mobileBody: MobileScaffold(),
-          tabletBody: TabletScaffold(),
-          desktopBody: DesktopScaffold(),
-        ) : WelcomeScreen(),
+        body: CustomSplashScreen(),
 
 
       ),

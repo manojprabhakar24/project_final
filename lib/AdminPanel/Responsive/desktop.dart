@@ -198,7 +198,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                           ),
                         if (showSettings)
                           Expanded(
-                            child: SettingsScreen(),
+                            child: Setting(),
                           )
                       ],
                     ),

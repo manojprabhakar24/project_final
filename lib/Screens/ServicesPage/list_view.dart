@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/service_list.dart';
-import '../../stylistPage/stylist.dart';
+import '../BookingPage/stylist.dart';
 
 
 

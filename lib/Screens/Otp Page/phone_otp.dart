@@ -94,20 +94,34 @@ class _LoginPageState extends State<LoginPage>
 
     print("Name: $text1");
     print("Phone: $text2");
+    setState(() {
+      _isButtonPressed = true;
+    });
 
     Timestamp timestamp = Timestamp.fromDate(widget.selectedDate);
+
+    // Replace 'your_stylist_id' with the actual ID of the stylist
+
 
     FirebaseFirestore.instance.collection('userData').add({
       'name': text1,
       'phoneNumber': text2,
-      'selectedDate': widget.selectedDate,
+      'selectedDate': timestamp,
       'selectedTimeSlots': widget.selectedTimeSlots,
-    })
-        .then((value) {
+    }).then((value) {
       print("Data saved successfully!");
-    })
-        .catchError((error) {
+      // Once data is saved, enable the button
+      setState(() {
+        _isButtonPressed = false;
+      });
+      // After saving data, trigger OTP sending
+      sendMessagesToEnteredNumber();
+    }).catchError((error) {
       print("Failed to save data: $error");
+      // Enable the button on error for retry
+      setState(() {
+        _isButtonPressed = false;
+      });
     });
   }
 
@@ -270,7 +284,7 @@ class _LoginPageState extends State<LoginPage>
 
 
                                                     });
-                                                    _saveData();
+
                                                     if (_formKey.currentState!.validate()) {
                                                       AuthService.sentOtp(
                                                         phone: _phoneController.text,
@@ -339,6 +353,7 @@ class _LoginPageState extends State<LoginPage>
                                                                       ElevatedButton(
                                                                         onPressed: () {
                                                                           sendMessagesToEnteredNumber();
+                                                                          _saveData();
                                                                           if (_formKey1.currentState!.validate()) {
                                                                             AuthService.loginWithOtp(
                                                                               otp: _otpController.text,

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 
-import '../Screens/Otp Page/phone_otp.dart';
+import '../Otp Page/phone_otp.dart';
 
 
 class Stylist3 extends StatefulWidget {
