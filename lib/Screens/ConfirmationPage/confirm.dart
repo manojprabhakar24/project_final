@@ -13,7 +13,7 @@ class ConfirmationScreen extends StatelessWidget {
     required this.name,
     required this.phoneNumber,
     required this.selectedDate,
-    required this.selectedTimeSlots,});
+    required this.selectedTimeSlots, required String stylistName,});
 
   String formattedDate(DateTime date) {
     return DateFormat.yMMMMd().format(date);

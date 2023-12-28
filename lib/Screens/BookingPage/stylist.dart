@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_final/Screens/BookingPage/stylist1.dart';
 import 'package:project_final/Screens/BookingPage/stylist2.dart';
 import 'package:project_final/Screens/BookingPage/stylist3.dart';
+
 
 import '../../models/stylist_data.dart';
 
@@ -24,39 +24,38 @@ class MyApp1 extends StatelessWidget {
             ),
           ),
           child: Container(
-            decoration:
-            BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
+            decoration: BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
             child: ListView(
               children: [
                 Column(
                   children: <Widget>[
                     Column(
-                        children: [
-                          Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 30)),
-                              ClipRRect(
-                                child: Image.asset(
-                                  "assets/Scissors-image-remove.png",
-                                  height: 80,
-                                  width: 80,
-                                ),
+                      children: [
+                        Row(
+                          children: [
+                            Padding(padding: EdgeInsets.only(left: 30)),
+                            ClipRRect(
+                              child: Image.asset(
+                                "assets/scissors1removebg.png",
+                                height: 80,
+                                width: 80,
                               ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 24)),
-                              Text(
-                                "Scissor's",
-                                style: GoogleFonts.openSans(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Padding(padding: EdgeInsets.only(left: 30)),
+                            Text(
+                              "Scissor's",
+                              style: GoogleFonts.openSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          ),
-                        ]
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     Container(
                       height: MediaQuery.of(context).size.height,
@@ -76,11 +75,13 @@ class MyApp1 extends StatelessWidget {
                             ),
                             Text(
                               'Hair Stylists',
-                              style: GoogleFonts.openSans(fontWeight: FontWeight.bold,fontSize: 25),
+                              style: GoogleFonts.openSans(
+                                  fontWeight: FontWeight.bold, fontSize: 25),
                             ),
-                            StylistCard(stylistData[0], Stylist1()),
-                            StylistCard(stylistData[1], Stylist2()),
-                            StylistCard(stylistData[2], Stylist3()),
+                            StylistCard(stylistData[0], Stylist1(stylistName: stylistData[0]['stylistName'] as String)),
+                            StylistCard(stylistData[1], Stylist2(stylistName: stylistData[1]['stylistName'] as String)),
+                            StylistCard(stylistData[2], Stylist3(stylistName: stylistData[2]['stylistName'] as String)),
+
                           ],
                         ),
                       ),
@@ -97,7 +98,7 @@ class MyApp1 extends StatelessWidget {
 }
 
 class StylistCard extends StatelessWidget {
-  final stylist;
+  final Map<String, dynamic> stylist;
   final Widget stylistScreen;
 
   StylistCard(this.stylist, this.stylistScreen);
@@ -110,31 +111,30 @@ class StylistCard extends StatelessWidget {
       height: MediaQuery.of(context).size.height / 5.3,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        color: stylist['bgColor'] ?? Colors.white,
+        color: stylist['bgColor'] as Color ?? Colors.white,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 10, left: 5, bottom: 10), // Adjust padding values as needed
+            padding: EdgeInsets.only(top: 10, left: 5, bottom: 10),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(40),
               child: Image.asset(
-                stylist['imgPth'],
+                stylist['imgPth'] as String,
                 width: MediaQuery.of(context).size.width * 0.40,
                 height: MediaQuery.of(context).size.height * 0.15,
               ),
             ),
           ),
-
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(top: 10,left: 10),
+              padding: EdgeInsets.only(top: 10, left: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    stylist['stylistName'],
+                    stylist['stylistName'] as String,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 18,
@@ -142,7 +142,7 @@ class StylistCard extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    stylist['Description'],
+                    stylist['Description'] as String,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey,
@@ -160,7 +160,7 @@ class StylistCard extends StatelessWidget {
                         width: 5,
                       ),
                       Text(
-                        stylist['rating'],
+                        stylist['rating'] as String,
                         style: TextStyle(
                           color: Color(0xff4E295B),
                           fontSize: 13,
@@ -184,7 +184,7 @@ class StylistCard extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Book',
                       style: TextStyle(color: Colors.white, fontSize: 15),
                     ),
@@ -198,5 +198,3 @@ class StylistCard extends StatelessWidget {
     );
   }
 }
-
-
