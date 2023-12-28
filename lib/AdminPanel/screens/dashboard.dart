@@ -67,9 +67,12 @@ class _DashboardState extends State<Dashboard> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: stylistAppointments.keys.map((stylistname) {
-                  return ElevatedButton(
-                    onPressed: () => fetchAppointmentsByStylist(stylistname),
-                    child: Text(stylistname),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0), // Adjust the horizontal padding as needed
+                    child: ElevatedButton(
+                      onPressed: () => fetchAppointmentsByStylist(stylistname),
+                      child: Text(stylistname),
+                    ),
                   );
                 }).toList(),
               ),
@@ -120,8 +123,24 @@ class _DashboardState extends State<Dashboard> {
                                 Text('Date: ${DateFormat('yyyy-MM-dd').format(date)}'),
                               ],
                             ),
+                            trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                            IconButton(color: Colors.green,
+                            icon: Icon(Icons.check),
+                            onPressed: () {
+                              // Add your logic for confirmation here
+                            },
                           ),
-                        );
+                          IconButton(color: Colors.red,
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              // Add your logic for deletion here
+                            },
+                          ),
+
+
+                        ])));
                       }).toList(),
                     ),
                   ],
