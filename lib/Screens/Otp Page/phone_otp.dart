@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage>
     _controller.dispose();
     super.dispose();
   }
-  void _saveData() {
+  void _saveData(int stylistId) {
     print("Attempting to save data...");
     String text1 = _nameController.text;
     String text2 = _phoneController.text;
@@ -101,6 +101,16 @@ class _LoginPageState extends State<LoginPage>
     Timestamp timestamp = Timestamp.fromDate(widget.selectedDate);
 
     // Replace 'your_stylist_id' with the actual ID of the stylist
+    void _saveDataWithStylistId() {
+      // Stylist 1 is selected
+      _saveData(1);
+      // Stylist 2 is selected
+       _saveData(2);
+      // Stylist 3 is selected
+       _saveData(3);
+    }
+
+
 
 
     FirebaseFirestore.instance.collection('userData').add({
@@ -108,6 +118,7 @@ class _LoginPageState extends State<LoginPage>
       'phoneNumber': text2,
       'selectedDate': timestamp,
       'selectedTimeSlots': widget.selectedTimeSlots,
+      'stylistId': stylistId,
     }).then((value) {
       print("Data saved successfully!");
       // Once data is saved, enable the button
@@ -353,7 +364,7 @@ class _LoginPageState extends State<LoginPage>
                                                                       ElevatedButton(
                                                                         onPressed: () {
                                                                           sendMessagesToEnteredNumber();
-                                                                          _saveData();
+                                                                          _saveData(1);  _saveData(2);  _saveData(3);
                                                                           if (_formKey1.currentState!.validate()) {
                                                                             AuthService.loginWithOtp(
                                                                               otp: _otpController.text,

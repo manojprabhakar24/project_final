@@ -1,19 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../Otp Page/phone_otp.dart';
 
-
-
-void addAppointmentToFirestore(DateTime selectedDate, List<String> selectedTimeSlots) {
-  FirebaseFirestore.instance.collection('appointments').add({
-    'date': selectedDate,
-    'timeSlots': selectedTimeSlots,
-  });
-}
 
 
 
@@ -23,6 +14,15 @@ class Stylist1 extends StatefulWidget {
 }
 
 class _Stylist1State extends State<Stylist1> {
+  int selectedStylistId = 1;
+  int getSelectedStylistId() {
+    // Implement your logic to determine the selected stylist ID here
+    // For example, if based on the selectedTimeSlot, return the corresponding stylist ID
+    // This logic might involve checking the selectedTimeSlot and returning the appropriate ID
+
+    // For demonstration purposes, returning a static value
+    return selectedStylistId;
+  }
   DateTime selectedDate = DateTime.now();
   Map<String, Color> buttonColors = {
     '10-11AM': Colors.green,
@@ -94,97 +94,98 @@ class _Stylist1State extends State<Stylist1> {
                 ],
               ),
               Expanded(
-                child: Center(
-                  child: Container(
-                    height: 600,
-                    width: 400,
-                    child: Card(
-                      elevation: 3,
-                      margin: EdgeInsets.all(20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Haircut Specialist",
-                                  style: GoogleFonts.openSans(
+                child: SingleChildScrollView(
+                  child: Center(
+                    child: Container(
+                      height: 600,
+                      width: 400,
+                      child: Card(
+                        margin: EdgeInsets.all(20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Haircut Specialist",
+                                    style: GoogleFonts.openSans(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.red),
+                                  ),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    // Adjust the radius as needed
+                                    child: Image.asset(
+                                      "assets/haircuttingsalon.jpg",
+                                      height: 100,
+                                      width: 130,
+                                    ),
+                                  ),
+                                  Text(
+                                    "John Dee",
+                                    style: GoogleFonts.openSans(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.red),
-                                ),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  // Adjust the radius as needed
-                                  child: Image.asset(
-                                    "assets/haircuttingsalon.jpg",
-                                    height: 100,
-                                    width: 130,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  "John Dee",
-                                  style: GoogleFonts.openSans(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                  SizedBox(
+                                    height: 5,
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Divider(
-                                  color: Colors.brown,
-                                  thickness: 2,
-                                  height: 5,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Center(
-                            child: Column(
-                              children: [
-                                Text(
-                                  "CHOOSE YOUR DATE",
-                                  style: GoogleFonts.openSans(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                                  Divider(
+                                    color: Colors.brown,
+                                    thickness: 2,
+                                    height: 5,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _selectDate(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(150, 35),
-                                backgroundColor: Colors.brown,
+                                ],
                               ),
-                              child: Text(
-                                'SELECT DATE',
-                                style: GoogleFonts.openSans(
-                                    fontWeight: FontWeight.bold,color: Colors.white
+                            ),
+                            Center(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "CHOOSE YOUR DATE",
+                                    style: GoogleFonts.openSans(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _selectDate(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(150, 35),
+                                  backgroundColor: Colors.brown,
+                                ),
+                                child: Text(
+                                  'SELECT DATE',
+                                  style: GoogleFonts.openSans(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
                                 ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: HorizontalWeekCalendarPackage(
-                              selectedDate: selectedDate,
-                              buttonColors: buttonColors,
-                              onToggleColor: toggleButtonColor,
-                              key: GlobalKey(),
+                            Expanded(
+                              child: HorizontalWeekCalendarPackage(
+                                selectedDate: selectedDate,
+                                buttonColors: buttonColors,
+                                onToggleColor: toggleButtonColor,
+                                key: GlobalKey(),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -196,6 +197,7 @@ class _Stylist1State extends State<Stylist1> {
       ),
     );
   }
+
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -222,6 +224,7 @@ class _Stylist1State extends State<Stylist1> {
       setState(() {
         buttonColors[time] = Colors.green;
         selectedTimeSlot = '';
+
       });
     } else {
       setState(() {
@@ -233,6 +236,7 @@ class _Stylist1State extends State<Stylist1> {
         selectedTimeSlot = time;
       });
     }
+
   }
 }
 
@@ -286,7 +290,7 @@ class _HorizontalWeekCalendarPackageState
             GoogleFonts.openSans(fontSize: 17, fontWeight: FontWeight.bold),
           ),
           buildTimeSlotsColumn(),
-          SizedBox(height: 5),
+          SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
               navigateToConfirmationScreen(context);
@@ -294,7 +298,8 @@ class _HorizontalWeekCalendarPackageState
             style: ElevatedButton.styleFrom(primary: Colors.brown),
             child: Text(
               'BOOK YOUR APPOINTMENT',
-              style: GoogleFonts.openSans(fontWeight: FontWeight.bold , color: Colors.white),
+              style: GoogleFonts.openSans(
+                  fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
         ],
@@ -308,19 +313,18 @@ class _HorizontalWeekCalendarPackageState
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           buildTimeSlotColumn([
             '10-11AM',
             '2-3PM',
             '6-7PM',
           ]),
-          SizedBox(width: 6),
+          SizedBox(width: 5),
           buildTimeSlotColumn([
             '11-12PM',
             '3-4PM',
             '7-8PM',
           ]),
-          SizedBox(width: 6),
+          SizedBox(width: 5),
           buildTimeSlotColumn([
             '12-1PM',
             '4-5PM',
@@ -337,11 +341,11 @@ class _HorizontalWeekCalendarPackageState
           .map(
             (time) => Column(
           children: [
-            SizedBox(height: 5),
+            SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: widget.buttonColors[time],
-                fixedSize: Size(100, 30),
+                fixedSize: Size(100, 35),
               ),
               onPressed: () {
                 widget.onToggleColor(time);
@@ -355,7 +359,7 @@ class _HorizontalWeekCalendarPackageState
     );
   }
 
-  void navigateToConfirmationScreen(BuildContext context) {
+  void navigateToConfirmationScreen(BuildContext context) async {
     List<String> selectedTimeSlots = [];
 
     widget.buttonColors.forEach((key, value) {
@@ -364,19 +368,34 @@ class _HorizontalWeekCalendarPackageState
       }
     });
 
+    // Collect appointment data here, including the selected stylist ID
+    Map<String, dynamic> appointmentData = {
+      'selectedDate': widget.selectedDate,
+      'selectedTimeSlots': selectedTimeSlots,
+      // Add other relevant appointment details
+      'stylistId': 1, // Adding the selected stylist ID
+    };
 
-    addAppointmentToFirestore(widget.selectedDate, selectedTimeSlots);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginPage(
-          selectedDate: widget.selectedDate,
-          selectedTimeSlots: selectedTimeSlots,
+    // Store the appointment in Firebase
+    try {
+      await FirebaseFirestore.instance.collection('userData').add(appointmentData);
+      // After successful storage, navigate to the confirmation screen or perform any necessary actions
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+            selectedDate: widget.selectedDate,
+            selectedTimeSlots: selectedTimeSlots,
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      print('Error: $e');
+      // Handle any errors that occur during the storage process
+    }
   }
+
+
 
   String formattedDate(DateTime date) {
     return DateFormat.yMMMMd().format(date);

@@ -23,6 +23,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   bool isHistorySelected = false;
   bool isSettingsSelected = false;
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
