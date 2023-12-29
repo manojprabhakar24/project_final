@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../../models/service_list.dart';
 import '../Otp Page/phone_otp.dart';
 
 
@@ -9,8 +10,16 @@ import '../Otp Page/phone_otp.dart';
 class Stylist3 extends StatefulWidget {
 
   final String stylistName;
+  final List<Services> selectedServices;
+  final double totalAmount;
 
-  Stylist3({required this.stylistName});
+  Stylist3({
+    Key? key,
+    required this.stylistName,
+    required this.selectedServices,
+    required this.totalAmount,
+  }) : super(key: key);
+
 
   @override
   _Stylist3State createState() => _Stylist3State();
@@ -175,6 +184,8 @@ class _Stylist3State extends State<Stylist3> {
                               buttonColors: buttonColors,
                               onToggleColor: toggleButtonColor,
                               stylistName: widget.stylistName,
+                              selectedServices:widget.selectedServices,
+                              totalAmount:widget.totalAmount,
                               key: GlobalKey(),
                             ),
                           ),
@@ -235,6 +246,9 @@ class HorizontalWeekCalendarPackage extends StatefulWidget {
   final Map<String, Color> buttonColors;
   final Function(String) onToggleColor;
   final String stylistName;
+  final List<Services> selectedServices;
+  final double totalAmount;
+
 
   const HorizontalWeekCalendarPackage({
     required Key key,
@@ -242,6 +256,8 @@ class HorizontalWeekCalendarPackage extends StatefulWidget {
     required this.buttonColors,
     required this.onToggleColor,
     required this.stylistName,
+    required this.selectedServices,
+    required this.totalAmount,// Pass stylistName to the constructor
   }) : super(key: key);
 
   @override
@@ -377,6 +393,8 @@ class _HorizontalWeekCalendarPackageState
           selectedDate: widget.selectedDate,
           selectedTimeSlots: selectedTimeSlots,
           stylistName: widget.stylistName,
+          selectedServices:widget.selectedServices,
+          totalAmount:widget.totalAmount,
         ),
       ),
     );

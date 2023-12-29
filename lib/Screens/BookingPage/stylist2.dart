@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/service_list.dart';
 import '../Otp Page/phone_otp.dart';
 
 
@@ -9,8 +10,15 @@ import '../Otp Page/phone_otp.dart';
 class Stylist2 extends StatefulWidget {
 
   final String stylistName;
+  final List<Services> selectedServices;
+  final double totalAmount;
 
-  Stylist2({required this.stylistName});
+  Stylist2({
+    Key? key,
+    required this.stylistName,
+    required this.selectedServices,
+    required this.totalAmount,
+  }) : super(key: key);
 
 
   @override
@@ -176,6 +184,8 @@ class _Stylist2State extends State<Stylist2> {
                               buttonColors: buttonColors,
                               onToggleColor: toggleButtonColor,
                               stylistName: widget.stylistName,
+                              selectedServices:widget.selectedServices,
+                              totalAmount:widget.totalAmount,
                               key: GlobalKey(),
                             ),
                           ),
@@ -237,6 +247,9 @@ class HorizontalWeekCalendarPackage extends StatefulWidget {
   final Map<String, Color> buttonColors;
   final Function(String) onToggleColor;
   final String stylistName;
+  final List<Services> selectedServices;
+  final double totalAmount;
+
 
   const HorizontalWeekCalendarPackage({
     required Key key,
@@ -244,6 +257,8 @@ class HorizontalWeekCalendarPackage extends StatefulWidget {
     required this.buttonColors,
     required this.onToggleColor,
     required this.stylistName,
+    required this.selectedServices,
+    required this.totalAmount,// Pass stylistName to the constructor
   }) : super(key: key);
 
   @override
@@ -379,6 +394,8 @@ class _HorizontalWeekCalendarPackageState
           selectedDate: widget.selectedDate,
           selectedTimeSlots: selectedTimeSlots,
           stylistName: widget.stylistName,
+          selectedServices:widget.selectedServices,
+          totalAmount:widget.totalAmount,
         ),
       ),
     );

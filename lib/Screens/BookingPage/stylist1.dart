@@ -2,13 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/service_list.dart';
 import '../Otp Page/phone_otp.dart';
 
 
 
 class Stylist1 extends StatefulWidget {
   final String stylistName;
-  Stylist1({required this.stylistName});
+  final List<Services> selectedServices;
+  final double totalAmount;
+
+  Stylist1({
+    Key? key,
+    required this.stylistName,
+    required this.selectedServices,
+    required this.totalAmount,
+  }) : super(key: key);
+
 
   @override
   _Stylist1State createState() => _Stylist1State();
@@ -172,6 +182,8 @@ class _Stylist1State extends State<Stylist1> {
                               buttonColors: buttonColors,
                               onToggleColor: toggleButtonColor,
                               stylistName: widget.stylistName,
+                              selectedServices:widget.selectedServices,
+                              totalAmount:widget.totalAmount,
                               key: GlobalKey(),
                             ),
                           ),
@@ -232,13 +244,18 @@ class HorizontalWeekCalendarPackage extends StatefulWidget {
   final Map<String, Color> buttonColors;
   final Function(String) onToggleColor;
   final String stylistName;
+ final List<Services> selectedServices;
+ final double totalAmount;
+
 
   const HorizontalWeekCalendarPackage({
     required Key key,
     required this.selectedDate,
     required this.buttonColors,
     required this.onToggleColor,
-    required this.stylistName, // Pass stylistName to the constructor
+    required this.stylistName,
+    required this.selectedServices,
+    required this.totalAmount,// Pass stylistName to the constructor
   }) : super(key: key);
 
   @override
@@ -375,6 +392,8 @@ class _HorizontalWeekCalendarPackageState
           selectedDate: widget.selectedDate,
           selectedTimeSlots: selectedTimeSlots,
           stylistName: widget.stylistName,
+          selectedServices:widget.selectedServices,
+          totalAmount:widget.totalAmount,
         ),
       ),
     );

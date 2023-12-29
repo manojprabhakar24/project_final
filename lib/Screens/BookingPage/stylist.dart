@@ -4,11 +4,19 @@ import 'package:project_final/Screens/BookingPage/stylist1.dart';
 import 'package:project_final/Screens/BookingPage/stylist2.dart';
 import 'package:project_final/Screens/BookingPage/stylist3.dart';
 
-
+import '../../models/service_list.dart';
 import '../../models/stylist_data.dart';
 
-
 class MyApp1 extends StatelessWidget {
+  final List<Services> selectedServices;
+  final double totalAmount;
+
+  MyApp1({
+    Key? key,
+    required this.selectedServices,
+    required this.totalAmount,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,7 +32,8 @@ class MyApp1 extends StatelessWidget {
             ),
           ),
           child: Container(
-            decoration: BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
+            decoration:
+                BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
             child: ListView(
               children: [
                 Column(
@@ -78,10 +87,27 @@ class MyApp1 extends StatelessWidget {
                               style: GoogleFonts.openSans(
                                   fontWeight: FontWeight.bold, fontSize: 25),
                             ),
-                            StylistCard(stylistData[0], Stylist1(stylistName: stylistData[0]['stylistName'] as String)),
-                            StylistCard(stylistData[1], Stylist2(stylistName: stylistData[1]['stylistName'] as String)),
-                            StylistCard(stylistData[2], Stylist3(stylistName: stylistData[2]['stylistName'] as String)),
-
+                            StylistCard(
+                                stylistData[0],
+                                Stylist1(
+                                    stylistName: stylistData[0]['stylistName']
+                                        as String,
+                                selectedServices:selectedServices,
+                                totalAmount:totalAmount)),
+                            StylistCard(
+                                stylistData[1],
+                                Stylist2(
+                                    stylistName: stylistData[1]['stylistName']
+                                        as String,
+                                    selectedServices:selectedServices,
+                                    totalAmount:totalAmount)),
+                            StylistCard(
+                                stylistData[2],
+                                Stylist3(
+                                    stylistName: stylistData[2]['stylistName']
+                                        as String,
+                                    selectedServices:selectedServices,
+                                    totalAmount:totalAmount)),
                           ],
                         ),
                       ),

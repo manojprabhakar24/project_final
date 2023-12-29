@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -58,25 +57,5 @@ class AuthService {
     var user = _firebaseAuth.currentUser;
     return user != null;
   }
-
-  Future<void> saveUserData({
-    required String name,
-    required String phoneNumber,
-    required String stylistName,
-    required DateTime selectedDate,
-    required List<String> selectedTimeSlots,
-  }) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').add({
-        'name': name,
-        'phoneNumber': phoneNumber,
-        'stylistname' : stylistName,
-        'selectedDate': selectedDate,
-        'selectedTimeSlots': selectedTimeSlots,
-
-      });
-    } catch (e) {
-      print("Error saving user data: $e");
-    }
-  }
 }
+

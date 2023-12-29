@@ -300,7 +300,10 @@ class _ListScreenState extends State<ListScreen> {
                       if (totalAmount > 0)
                         RawMaterialButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp1()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp1(
+                              selectedServices:selectedServices,
+                              totalAmount:totalAmount,
+                            )));
                           },
                           fillColor: Colors.brown[900],
                           constraints: BoxConstraints(maxHeight: 100),

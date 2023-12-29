@@ -10,6 +10,12 @@ class Services {
     required this.price,
     required this.description,
     required this.images,});
+Map<String,dynamic> toMap(){
+  return{
+    'name':name,
+    'price':price
+  };
+}
 }
 
 List<Services>ServicesList=[
