@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -9,6 +10,8 @@ import '../BookingPage/stylist.dart';
 class ListScreen extends StatefulWidget {
   @override
   _ListScreenState createState() => _ListScreenState();
+
+
   void navigateToListScreen(BuildContext context) {
     Navigator.push(
         context,
@@ -18,6 +21,41 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   List<Services> selectedServices = [];
   double totalAmount = 0.0;
+  late List<Services> servicesList = []; // Initialize as an empty list
+
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch services from Firestore when the widget is initialized
+    _fetchServices();
+  }
+
+  Future<void> _fetchServices() async {
+    try {
+      // Access Firestore collection named 'services'
+      QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('services').get();
+
+      // Extract documents from QuerySnapshot
+      List<Services> services = querySnapshot.docs.map((doc) {
+        return Services(
+          name: doc['name'] as String,
+          description: doc['description'] as String,
+          price: doc['price'].toString(), images: '', // Convert integer to string here
+
+          // Add other necessary fields
+        );
+      }).toList();
+
+      setState(() {
+        servicesList = services;
+      });
+    } catch (e) {
+      // Handle errors here (e.g., show error message)
+      print('Error fetching services: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +124,9 @@ class _ListScreenState extends State<ListScreen> {
                   Expanded(
                     child: ListView.builder(
                       padding: EdgeInsets.symmetric(vertical: 2),
-                      itemCount: ServicesList.length,
+                      itemCount: servicesList.length,
                       itemBuilder: (context, index) {
-                        Services service = ServicesList[index];
+                        Services service = servicesList[index];
                         return Column(
                           children: [
                             Card(

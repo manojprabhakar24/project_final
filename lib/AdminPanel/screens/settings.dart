@@ -105,7 +105,7 @@ class _SettingState extends State<Setting> {
                           SizedBox(width: 20),
                         if (selectedStylist == 1)
                           Expanded(
-                            child: ServiceForm(),
+                            child: ServiceForm(addServiceToListScreen: (Services ) {  },),
                           ),
                         if (selectedStylist == 2)
                           SizedBox(width: 20),

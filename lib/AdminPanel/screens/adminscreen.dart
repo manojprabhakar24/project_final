@@ -1,11 +1,16 @@
-
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../models/service_list.dart';
+
 class ServiceForm extends StatefulWidget {
-  const ServiceForm({Key? key}) : super(key: key);
+  final Function(Services) addServiceToListScreen; // Function reference
+
+  ServiceForm({Key? key, required this.addServiceToListScreen})
+      : super(key: key);
 
   @override
   State<ServiceForm> createState() => _ServiceFormState();
@@ -15,18 +20,24 @@ class _ServiceFormState extends State<ServiceForm> {
   TextEditingController _serviceNameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
-  File? _image;
+  TextEditingController _profileNameController = TextEditingController();
+  TextEditingController _expertiseController = TextEditingController();
+  File? _profileImage;
   final ImagePicker _picker = ImagePicker();
 
-  Future getImage() async {
+  Future<void> getProfileImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        _profileImage = File(pickedFile.path);
       });
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,20 +58,49 @@ class _ServiceFormState extends State<ServiceForm> {
           Row(
             children: [
               GestureDetector(
-                onTap: getImage,
+                onTap: getProfileImage,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: _image != null
-                      ? FileImage(_image!) as ImageProvider<Object>?
+                  backgroundImage: _profileImage != null
+                      ? FileImage(_profileImage!) as ImageProvider<Object>?
                       : AssetImage('assets/profile.png'),
+
                 ),
               ),
               SizedBox(width: 10),
               ElevatedButton(
-                onPressed: getImage,
+                onPressed: getProfileImage,
                 child: Text('Add Photo'),
               ),
             ],
+          ),
+          SizedBox(height: 5),
+          TextField(
+            controller: _profileNameController,
+            decoration: InputDecoration(labelText: 'Profile Name'),
+          ),
+          SizedBox(height: 5),
+          TextField(
+            controller: _expertiseController,
+            decoration: InputDecoration(labelText: 'Expertise'),
+          ),
+          SizedBox(height: 5),
+          ElevatedButton(
+            onPressed: () {
+              // Handle profile form submission here
+              String profileName = _profileNameController.text;
+              String expertise = _expertiseController.text;
+
+              // Use 'profileName', 'expertise', and '_profileImage' as needed for your logic
+
+              // Reset the form after submission
+              _profileNameController.clear();
+              _expertiseController.clear();
+              setState(() {
+                _profileImage = null;
+              });
+            },
+            child: Text('Submit'),
           ),
           SizedBox(height: 5),
           TextField(
@@ -81,23 +121,40 @@ class _ServiceFormState extends State<ServiceForm> {
           ),
           SizedBox(height: 5),
           ElevatedButton(
-            onPressed: () {
-              // Handle form submission here
+            // Inside onPressed method of ElevatedButton in ServiceForm
+            onPressed: () async {
               String serviceName = _serviceNameController.text;
               String serviceDescription = _descriptionController.text;
-              double servicePrice =
-                  double.tryParse(_priceController.text) ?? 0.0;
+              double servicePrice = double.tryParse(_priceController.text) ?? 0.0;
 
-              // Use 'serviceName', 'serviceDescription', 'servicePrice', and '_image' as needed for your logic
+              // Creating a map representing the service data
+              Map<String, dynamic> serviceData = {
+                'name': serviceName,
+                'description': serviceDescription,
+                'price': servicePrice,
+                // Add other necessary fields
+              };
 
-              // Reset the form after submission
-              _serviceNameController.clear();
-              _descriptionController.clear();
-              _priceController.clear();
-              setState(() {
-                _image = null;
-              });
+              try {
+                // Get Firestore instance
+                FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+                // Add the service data to Firestore
+                await firestore.collection('services').add(serviceData);
+
+                // Show success message or navigate to another screen upon successful addition
+                // (You can add your logic here)
+
+                // Reset the form after submission
+                _serviceNameController.clear();
+                _descriptionController.clear();
+                _priceController.clear();
+              } catch (e) {
+                // Handle errors here (e.g., show error message)
+                print('Error: $e');
+              }
             },
+
             child: Text('Submit'),
           ),
         ],
