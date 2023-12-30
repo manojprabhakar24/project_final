@@ -26,8 +26,7 @@ class _DashboardState extends State<Dashboard> {
 
   void fetchAllAppointments() async {
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(
-          'Users').get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').get();
 
       setState(() {
         stylistAppointments = {};

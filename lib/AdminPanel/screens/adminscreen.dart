@@ -23,8 +23,6 @@ class _ServiceFormState extends State<ServiceForm> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
-
-
   Future getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
@@ -92,7 +90,8 @@ class _ServiceFormState extends State<ServiceForm> {
             onPressed: () async {
               String serviceName = _serviceNameController.text;
               String serviceDescription = _descriptionController.text;
-              double servicePrice = double.tryParse(_priceController.text) ?? 0.0;
+              double servicePrice =
+                  double.tryParse(_priceController.text) ?? 0.0;
 
               // Creating a map representing the service data
               Map<String, dynamic> serviceData = {
@@ -200,13 +199,7 @@ class _ProfileFormState extends State<ProfileForm> {
           SizedBox(height: 5),
           ElevatedButton(
             onPressed: () {
-              // Handle profile form submission here
-              String profileName = _profileNameController.text;
-              String expertise = _expertiseController.text;
 
-              // Use 'profileName', 'expertise', and '_profileImage' as needed for your logic
-
-              // Reset the form after submission
               _profileNameController.clear();
               _expertiseController.clear();
               setState(() {
@@ -272,9 +265,11 @@ class _PriceUpdateFormState extends State<PriceUpdateForm> {
             decoration: InputDecoration(labelText: 'Confirm Price'),
           ),
           SizedBox(height: 5),
+
+// Your existing PriceUpdateForm code...
+
           ElevatedButton(
-            onPressed: () {
-              // Handle price update form submission here
+            onPressed: () async {
               double oldPrice =
                   double.tryParse(widget.oldPriceController.text) ?? 0.0;
               double newPrice1 =
@@ -284,10 +279,29 @@ class _PriceUpdateFormState extends State<PriceUpdateForm> {
 
               // Use 'oldPrice', 'newPrice1', and 'newPrice2' as needed for your logic
 
-              // Reset the form after submission
-              widget.oldPriceController.clear();
-              widget.newPriceController1.clear();
-              widget.confirmPriceController2.clear();
+              // Update Firestore document here
+              try {
+                // Replace 'yourCollection' and 'yourDocumentId' with your Firestorm collection and document IDs
+                await FirebaseFirestore.instance
+                    .collection('services')
+                    .doc('yourDocumentId')
+                    .update({
+                  'oldPrice': oldPrice,
+                  'newPrice1': newPrice1,
+                  'newPrice2': newPrice2,
+                  // Add other fields as necessary
+                });
+
+                // Reset the form after successful submission
+                widget.oldPriceController.clear();
+                widget.newPriceController1.clear();
+                widget.confirmPriceController2.clear();
+
+                // Show a success message or perform any additional actions
+              } catch (e) {
+                // Handle errors, show an error message, or perform fallback actions
+                print('Error updating prices: $e');
+              }
             },
             child: Text('Update Price'),
           ),
