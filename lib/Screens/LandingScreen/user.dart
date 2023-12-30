@@ -73,7 +73,7 @@ class WelcomeScreen extends StatelessWidget {
                       SizedBox(width: 15,),
                       Text(
                         "USER",
-                        style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),
                       ),
 
                     ],
@@ -103,7 +103,7 @@ class WelcomeScreen extends StatelessWidget {
                       SizedBox(width: 15,),
                       Text(
                         "ADMIN",
-                        style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),
                       ),
 
 

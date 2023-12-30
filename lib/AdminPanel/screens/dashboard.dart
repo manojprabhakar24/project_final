@@ -132,7 +132,7 @@ class _DashboardState extends State<Dashboard> {
                             String> selectedServices = selectedServicesAppointment
                             .map((
                             service) => '${service['name']}-${service['price']}')
-                        .toList();
+                            .toList();
 
 
                         return Container(
@@ -143,24 +143,24 @@ class _DashboardState extends State<Dashboard> {
                                   Radius.circular(8)),
                             ),
                             child: ListTile(
-                                contentPadding: EdgeInsets.all(16),
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                        'Customer Name: ${appointment['name']}'),
-                                    Text(
-                                        'Phone Number: ${appointment['phoneNumber']}'),
-                                    Text(
-                                        'Booking Slot: ${appointment['selectedTimeSlots']}'),
-                                    Text(
-                                        'Selected Services: ${selectedServices.join(', ')}'),
-                                    Text(
-                                        'Total Amount: ${appointment['totalAmount']}'),
-                                    Text('Date: ${DateFormat('yyyy-MM-dd')
-                                        .format(date)}'),
-                                  ],
-                                ),
+                              contentPadding: EdgeInsets.all(16),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Customer Name: ${appointment['name']}'),
+                                  Text(
+                                      'Phone Number: ${appointment['phoneNumber']}'),
+                                  Text(
+                                      'Booking Slot: ${appointment['selectedTimeSlots']}'),
+                                  Text(
+                                      'Selected Services: ${selectedServices.join(', ')}'),
+                                  Text(
+                                      'Total Amount: ${appointment['totalAmount']}'),
+                                  Text('Date: ${DateFormat('yyyy-MM-dd')
+                                      .format(date)}'),
+                                ],
+                              ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [

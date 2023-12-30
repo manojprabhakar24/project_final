@@ -45,7 +45,7 @@ class MyApp1 extends StatelessWidget {
                             Padding(padding: EdgeInsets.only(left: 30)),
                             ClipRRect(
                               child: Image.asset(
-                                "assets/scissors1removebg.png",
+                                'assets/Scissors-image-remove.png',
                                 height: 80,
                                 width: 80,
                               ),

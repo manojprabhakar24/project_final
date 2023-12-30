@@ -1,8 +1,5 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
 import 'adminscreen.dart';
 
 class Setting extends StatefulWidget {
@@ -21,7 +18,7 @@ class _SettingState extends State<Setting> {
   ButtonStyle getStylistButtonStyle(int stylistId) {
     return selectedStylist == stylistId
         ? ElevatedButton.styleFrom(
-      primary: Colors.blueAccent, // Change to red when selected
+      primary: Colors.blueAccent,
     )
         : selectedButtonStyle;
   }

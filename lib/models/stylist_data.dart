@@ -6,7 +6,7 @@ const stylistData = [
     'Description': 'Friends come and go, but a good hairstylist is forever.',
     'rating': '4.8',
     'rateAmount': '56',
-    'imgPth': 'assets/haircolor.jpeg',
+    'imgPth': 'assets/john dee.jpg',
     'bgColor': Color(0xffFFF0EB),
   },
   {
@@ -14,7 +14,7 @@ const stylistData = [
     'Description': "Improve your selfies, don't cut your hair yourself!",
     'rating': '4.7',
     'rateAmount': '80',
-    'imgPth': 'assets/haircolor.jpeg',
+    'imgPth': 'assets/bhatt.jpg',
     'bgColor': Color(0xffEBF6FF),
   },
   {
@@ -22,7 +22,7 @@ const stylistData = [
     'Description': 'Invest in your hair, it is the crown you never take off.',
     'rating': '4.7',
     'rateAmount': '70',
-    'imgPth': 'assets/shaving.jpeg',
+    'imgPth': 'assets/vinod.jpg',
     'bgColor': Color(0xffFFF3EB),
   }
 ];

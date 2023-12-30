@@ -8,12 +8,15 @@ class ConfirmationScreen extends StatelessWidget {
   final String phoneNumber;
   final DateTime selectedDate;
   final List<String> selectedTimeSlots;
+  final String stylistName;
 
   const ConfirmationScreen({
     required this.name,
     required this.phoneNumber,
     required this.selectedDate,
-    required this.selectedTimeSlots, required String stylistName,});
+    required this.selectedTimeSlots, required this.stylistName,
+
+  });
 
   String formattedDate(DateTime date) {
     return DateFormat.yMMMMd().format(date);
@@ -138,6 +141,14 @@ class ConfirmationScreen extends StatelessWidget {
                               Icons.calendar_month_sharp,
                               size: 30,
                               color: Colors.blueGrey,
+                            ),
+                            Text(
+                              'Selected Stylist: $stylistName',
+                              style: GoogleFonts.openSans(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(
                               'Selected Time Slots: ${selectedTimeSlots.join(",")}',
