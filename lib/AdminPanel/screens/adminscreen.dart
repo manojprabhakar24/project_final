@@ -20,24 +20,20 @@ class _ServiceFormState extends State<ServiceForm> {
   TextEditingController _serviceNameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
-  TextEditingController _profileNameController = TextEditingController();
-  TextEditingController _expertiseController = TextEditingController();
-  File? _profileImage;
+  File? _image;
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> getProfileImage() async {
+
+
+  Future getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
-        _profileImage = File(pickedFile.path);
+        _image = File(pickedFile.path);
       });
     }
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -58,49 +54,20 @@ class _ServiceFormState extends State<ServiceForm> {
           Row(
             children: [
               GestureDetector(
-                onTap: getProfileImage,
+                onTap: getImage,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: _profileImage != null
-                      ? FileImage(_profileImage!) as ImageProvider<Object>?
+                  backgroundImage: _image != null
+                      ? FileImage(_image!) as ImageProvider<Object>?
                       : AssetImage('assets/profile.png'),
-
                 ),
               ),
               SizedBox(width: 10),
               ElevatedButton(
-                onPressed: getProfileImage,
+                onPressed: getImage,
                 child: Text('Add Photo'),
               ),
             ],
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: _profileNameController,
-            decoration: InputDecoration(labelText: 'Profile Name'),
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: _expertiseController,
-            decoration: InputDecoration(labelText: 'Expertise'),
-          ),
-          SizedBox(height: 5),
-          ElevatedButton(
-            onPressed: () {
-              // Handle profile form submission here
-              String profileName = _profileNameController.text;
-              String expertise = _expertiseController.text;
-
-              // Use 'profileName', 'expertise', and '_profileImage' as needed for your logic
-
-              // Reset the form after submission
-              _profileNameController.clear();
-              _expertiseController.clear();
-              setState(() {
-                _profileImage = null;
-              });
-            },
-            child: Text('Submit'),
           ),
           SizedBox(height: 5),
           TextField(
