@@ -175,7 +175,7 @@ class _ListScreenState extends State<ListScreen> {
                                             ),
                                             SizedBox(height: 4),
                                             Text(
-                                              service.price,
+                                              'Rs ${service.price}/-',
                                               style: GoogleFonts.poppins(
                                                 textStyle: TextStyle(
                                                   fontSize: 15,
@@ -183,23 +183,24 @@ class _ListScreenState extends State<ListScreen> {
                                                 ),
                                               ),
                                             ),
+
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 4),
+                                              child: Text(
+                                                service.description,
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: TextStyle(
+                                                    fontSize: 12,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+
+                                                ),
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 4),
-                                    child: Text(
-                                      service.description,
-                                      style: GoogleFonts.poppins(
-                                        textStyle: TextStyle(
-                                          fontSize: 12,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-
-                                      ),
-                                    ),
                                   ),
                                   trailing: ElevatedButton(
                                     onPressed: () {
