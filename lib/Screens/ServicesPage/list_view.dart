@@ -148,7 +148,8 @@ class _ListScreenState extends State<ListScreen> {
                                           service.images,
                                           height: 55,
                                           width: 85,
-                                          fit: BoxFit.cover,
+                                          fit:BoxFit.cover,
+
                                           errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                                             // Placeholder or error image
                                             return Placeholder(
