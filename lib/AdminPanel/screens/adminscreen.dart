@@ -41,7 +41,17 @@ class _ServiceFormState extends State<ServiceForm> {
     String price = _priceController.text;
 
     String resp = await StoreData().saveData(name: name, bio: bio,price:price, file: _image!);
+
+  if (resp == 'success') {
+  // If saving is successful, show a SnackBar
+  ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+  content: Text('Data saved successfully!'),
+  duration: Duration(seconds: 2),
+  ),
+  );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +107,7 @@ class _ServiceFormState extends State<ServiceForm> {
               TextField(
                 controller: bioController,
                 decoration: const InputDecoration(
-                  hintText: 'Enter Bio',
+                  hintText: 'Enter Description',
                   contentPadding: EdgeInsets.all(10),
                   border: OutlineInputBorder(),
                 ),
@@ -137,8 +147,7 @@ class _ProfileFormState extends State<ProfileForm> {
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
 
-
-  Future<void> getProfileImage() async {
+  Future getProfileImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
@@ -147,41 +156,6 @@ class _ProfileFormState extends State<ProfileForm> {
       });
     }
   }
-
-  Future<void> saveProfile() async {
-    String profileName = _profileNameController.text;
-    String expertise = _expertiseController.text;
-
-    // Check if all necessary fields are filled
-    if (profileName.isNotEmpty && expertise.isNotEmpty && _profileImage != null) {
-      // Convert the image to bytes
-      List<int> imageBytes = await _profileImage!.readAsBytes();
-
-      try {
-        // Save profile data to Firestore
-        await FirestoreService().saveProfileData(
-          profileName: profileName,
-          expertise: expertise,
-          profileImage: imageBytes,
-        );
-
-        // Clear form fields after successful submission
-        _profileNameController.clear();
-        _expertiseController.clear();
-        setState(() {
-          _profileImage = null;
-        });
-
-        // Show a success message or perform any additional actions
-      } catch (e) {
-        // Handle errors, show an error message, or perform fallback actions
-        print('Error saving profile: $e');
-      }
-    } else {
-      // Handle when fields are not filled
-    }
-  }
- 
 
   @override
   Widget build(BuildContext context) {
@@ -244,30 +218,6 @@ class _ProfileFormState extends State<ProfileForm> {
     );
   }
 }
-
-class FirestoreService {
-  final CollectionReference profiles =
-  FirebaseFirestore.instance.collection('profiles');
-
-  Future<void> saveProfileData({
-    required String profileName,
-    required String expertise,
-    required List<int> profileImage,
-  }) async {
-    try {
-      // Save profile data to Firestore
-      await profiles.add({
-        'profileName': profileName,
-        'expertise': expertise,
-        'profileImage': profileImage,
-        // Add other profile-related fields as needed
-      });
-    } catch (e) {
-      throw Exception('Error saving profile data: $e');
-    }
-  }
-}
-
 
 class PriceUpdateForm extends StatefulWidget {
   final TextEditingController oldPriceController;
