@@ -3,7 +3,6 @@ import 'dart:html';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -356,7 +355,7 @@ class _ListScreenState extends State<ListScreen> {
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp1(
                               selectedServices:selectedServices,
-                              totalAmount:totalAmount,
+                              totalAmount:totalAmount, stylistName: '', description: '',
                             )));
                           },
                           fillColor: Colors.brown[900],

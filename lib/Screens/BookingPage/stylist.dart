@@ -10,12 +10,17 @@ import '../../models/stylist_data.dart';
 class MyApp1 extends StatelessWidget {
   final List<Services> selectedServices;
   final double totalAmount;
+  final String stylistName; // New parameter
+  final String description; // New parameter
 
   MyApp1({
     Key? key,
     required this.selectedServices,
     required this.totalAmount,
+    required this.stylistName,
+    required this.description,
   }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {

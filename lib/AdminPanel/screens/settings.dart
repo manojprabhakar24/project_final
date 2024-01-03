@@ -121,10 +121,7 @@ class _SettingState extends State<Setting> {
                           ),
                         if (selectedStylist == 2)
                           SizedBox(width: 20),
-                        if (selectedStylist == 2)
-                          Expanded(
-                            child: ProfileForm(),
-                          ),
+
                         if (selectedStylist == 3)
                           SizedBox(width: 20),
                         if (selectedStylist == 3)
