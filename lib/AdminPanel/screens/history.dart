@@ -1,115 +1,74 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({Key? key});
+  const HistoryScreen({Key? key}) : super(key: key);
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  _HistoryScreenState createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  late BehaviorSubject<List<DocumentSnapshot>> _customersSubject;
+  late Stream<QuerySnapshot> _historyStream;
 
   @override
   void initState() {
     super.initState();
-
-    CollectionReference userDataCollection = FirebaseFirestore.instance.collection('userData');
-    Stream<QuerySnapshot> customersStream = userDataCollection.snapshots();
-
-    _customersSubject = BehaviorSubject<List<DocumentSnapshot>>.seeded([]);
-
-    customersStream.listen((QuerySnapshot snapshot) {
-      _customersSubject.add(snapshot.docs);
-    });
-  }
-
-  @override
-  void dispose() {
-    _customersSubject.close();
-    super.dispose();
+    _historyStream = FirebaseFirestore.instance
+        .collection('Users')
+        .where('completed', isEqualTo: true)
+        .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Text('Customer List', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-            Divider(
-              color: Colors.black45,
-              indent: 20,
-              endIndent: 20,
-            ),
-            SizedBox(height: 20),
-            StreamBuilder<List<DocumentSnapshot>>(
-              stream: _customersSubject.stream,
-              initialData: [],
-              builder: (context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                }
+      appBar: AppBar(
+        title: Text('History'),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _historyStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
 
-                final List<DocumentSnapshot> documents = snapshot.data!;
+          final completedAppointments = snapshot.data?.docs ?? [];
 
-                return Column(
-                  children: documents.map((doc) {
-                    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          return ListView.builder(
+            itemCount: completedAppointments.length,
+            itemBuilder: (context, index) {
+              final completedAppointment = completedAppointments[index];
+              final customerName = completedAppointment['name'];
+              final customerPhoneNumber = completedAppointment['phoneNumber'];
+              final bookingSlot = completedAppointment['selectedTimeSlots'];
+              final totalAmount = completedAppointment['totalAmount'];
+              final selectedServices = completedAppointment['selectedServices'];
+              final stylistName =
+              completedAppointment['stylistName']; // Assuming stylistName is a field in your document
+              final selectedDate =
+              completedAppointment['selectedDate']; // Date field from Firestore
 
-                    Timestamp? timestamp = data['selectedDate'] as Timestamp?;
-                    DateTime? dateTime = timestamp?.toDate();
-                    final formattedDate = dateTime != null ? DateFormat('yyyy-MM-dd').format(dateTime) : '';
-
-                    CollectionReference subcollection = doc.reference.collection('usersData');
-
-                    return FutureBuilder(
-                      future: subcollection.get(),
-                      builder: (context, AsyncSnapshot<QuerySnapshot> subcollectionSnapshot) {
-                        if (subcollectionSnapshot.connectionState == ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        }
-
-                        if (subcollectionSnapshot.hasError) {
-                          return Text('Error: ${subcollectionSnapshot.error}');
-                        }
-
-                        final List<DocumentSnapshot> subcollectionDocuments = subcollectionSnapshot.data!.docs;
-
-                        return Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 1),
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                          child: ListTile(
-                            leading: Text('Time Slots: ${data['selectedTimeSlots']}'),
-                            contentPadding: EdgeInsets.all(16),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Customer Name: ${data['name']}'),
-                                Text('Phone Number: ${data['phoneNumber']}'),
-                                Text(
-                                    'Booking Slot: ${data['selectedTimeSlots']}'),
-
-                              ],
-                            ),
-                            trailing: Text('Date: $formattedDate'),
-                          ),
-                        );
-                      },
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-          ],
-        ),
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: ListTile(
+                  title: Text(customerName),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Stylist: $stylistName'),
+                      Text('Phone Number: $customerPhoneNumber'),
+                      Text('Booking Slot: $bookingSlot'),
+                      Text('Total Amount: $totalAmount'),
+                      Text('Date: $selectedDate'), // Display the date
+                      Text('Services: $selectedServices'), // Update based on your data structure
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

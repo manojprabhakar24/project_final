@@ -106,7 +106,7 @@ class _SettingState extends State<Setting> {
                               style: getStylistButtonStyle(3),
                             ),
 
-                            Divider(
+                            const Divider(
                               thickness: 2.0,
                               color: Colors.black,
                             ),

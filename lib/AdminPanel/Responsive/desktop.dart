@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
+
 import '../screens/Dashboard.dart';
 import '../screens/history.dart';
-
 import '../screens/settings.dart';
 
 class DesktopScaffold extends StatefulWidget {
@@ -23,33 +23,37 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   bool isHistorySelected = false;
   bool isSettingsSelected = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(children: [
-          Image.asset(
-            'assets/Scissors-image-remove.png',
-            height: 50,
-            width: 50,
-            fit: BoxFit.cover,
-          ),
-          Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-          Text(
-            "Scissor's",
-            style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),
-          ),
-        ]),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/Scissors-image-remove.png',
+              height: 50,
+              width: 50,
+              fit: BoxFit.cover,
+            ),
+            Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+            Text(
+              "Scissor's",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
         actions: <Widget>[
-          Icon(Icons.account_circle,size: 35),
+          Icon(Icons.account_circle, size: 35),
           SizedBox(
             width: 10,
           ),
           ElevatedButton.icon(
             onPressed: () {},
-            label: Text("LOGOUT",style: TextStyle(color: Colors.white),),
-            icon: Icon(Icons.exit_to_app,color:Colors.white),
+            label: Text(
+              "LOGOUT",
+              style: TextStyle(color: Colors.white),
+            ),
+            icon: Icon(Icons.exit_to_app, color: Colors.white),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.indigo,
             ),
@@ -64,7 +68,6 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
             child: Column(
               children: [
                 Padding(padding: EdgeInsets.symmetric(vertical: 15)),
-                //Icon(Icons.admin_panel_settings),
                 Text(
                   "WELCOME ADMIN",
                   style: TextStyle(fontSize: 25),
@@ -189,18 +192,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   Flexible(
                     child: Column(
                       children: [
-                        if (showDashboard)
-                          Expanded(
-                            child: Dashboard(),
-                          ),
-                        if (showHistory)
-                          Expanded(
-                            child: HistoryScreen(),
-                          ),
-                        if (showSettings)
-                          Expanded(
-                            child: Setting(),
-                          )
+                        if (showDashboard) Expanded(child: Dashboard()),
+                        if (showHistory) Expanded(child: HistoryScreen()),
+                        if (showSettings) Expanded(child: Setting())
                       ],
                     ),
                   ),

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../models/service_list.dart';
@@ -20,8 +21,7 @@ class ServiceForm extends StatefulWidget {
 }
 
 class _ServiceFormState extends State<ServiceForm> {
-  TextEditingController _serviceNameController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+
   TextEditingController _priceController = TextEditingController();
   Uint8List? _image;
   final TextEditingController nameController = TextEditingController();
@@ -34,24 +34,120 @@ class _ServiceFormState extends State<ServiceForm> {
     });
   }
 
-  void saveProfile() async{
+  void saveProfile() async {
+    if (_image == null) {
+      // If image is not added, show an error SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please add an image.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return; // Stop further execution of the method
+    }
 
     String name = nameController.text;
     String bio = bioController.text;
     String price = _priceController.text;
 
-    String resp = await StoreData().saveData(name: name, bio: bio,price:price, file: _image!);
+    // Check if any of the fields are empty
+    if (name.isEmpty || bio.isEmpty || price.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill in all fields.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return; // Stop further execution if any field is empty
+    }
 
-  if (resp == 'success') {
-  // If saving is successful, show a SnackBar
-  ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-  content: Text('Data saved successfully!'),
-  duration: Duration(seconds: 2),
-  ),
-  );
+    // Assuming StoreData() is a hypothetical class that saves data asynchronously
+    String resp = await StoreData().saveData(
+      name: name,
+      bio: bio,
+      price: price,
+      file: _image!,
+    );
+
+    if (resp == 'success') {
+      // If saving is successful, show a success SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Data saved successfully!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      nameController.clear();
+      bioController.clear();
+      _priceController.clear();
+      setState(() {
+        _image = null; // Clear the stored image
+      });
+    }
   }
-}
+  Future<void> deleteDataByName(String nameToDelete) async {
+    CollectionReference services = FirebaseFirestore.instance.collection('userProfile');
+
+    try {
+      QuerySnapshot querySnapshot =
+      await services.where('name', isEqualTo: nameToDelete).get();
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('The Service $nameToDelete deleted successfully!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      print('Error deleting data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete data. Please try again.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+
+  void openModalBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController deleteNameController = TextEditingController();
+
+        return Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextField(
+                controller: deleteNameController,
+                decoration: InputDecoration(
+                  hintText: 'Enter Name to Delete',
+                ),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  String nameToDelete = deleteNameController.text;
+                  deleteDataByName(nameToDelete); // Call your delete method here
+                  Navigator.pop(context); // Close the bottom sheet after deletion
+                },
+                child: Text('Delete'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +178,7 @@ class _ServiceFormState extends State<ServiceForm> {
                   ),
                   Positioned(
                     bottom: -10,
-                    left: 80,
+                    left: 90,
                     child: IconButton(
                       onPressed: selectImage,
                       icon: const Icon(Icons.add_a_photo),
@@ -117,6 +213,10 @@ class _ServiceFormState extends State<ServiceForm> {
               ),
               TextField(
                 controller: _priceController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
                 decoration: const InputDecoration(
                   hintText: 'Enter price',
                   contentPadding: EdgeInsets.all(10),
@@ -126,12 +226,21 @@ class _ServiceFormState extends State<ServiceForm> {
               ElevatedButton(
                 onPressed: saveProfile,
                 child: const Text('Save Profile'),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              ),
+    InkWell(
+    onTap: openModalBottomSheet,
+    child: Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Text(
+    'Click here to delete data',
+    style: TextStyle(
+    decoration: TextDecoration.underline,
+    color: Colors.blue,
+    ),
+    ),
+    ),
+    ),
+    ]))));
   }
 }
 class ProfileForm extends StatefulWidget {
@@ -208,7 +317,6 @@ class _ProfileFormState extends State<ProfileForm> {
               _profileNameController.clear();
               _expertiseController.clear();
               setState(() {
-                _profileImage = null;
               });
             },
             child: Text('Submit'),
