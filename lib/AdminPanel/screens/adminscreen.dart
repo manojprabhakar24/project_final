@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../models/service_list.dart';
+import '../../models/store.dart';
+import '../../models/utils.dart';
 
 class ServiceForm extends StatefulWidget {
   final Function(Services) addServiceToListScreen; // Function reference
@@ -20,115 +23,107 @@ class _ServiceFormState extends State<ServiceForm> {
   TextEditingController _serviceNameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
-  File? _image;
-  final ImagePicker _picker = ImagePicker();
+  Uint8List? _image;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
 
-  Future getImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  void selectImage() async {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = img;
+    });
+  }
 
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
+  void saveProfile() async{
+
+    String name = nameController.text;
+    String bio = bioController.text;
+    String price = _priceController.text;
+
+    String resp = await StoreData().saveData(name: name, bio: bio,price:price, file: _image!);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Add Service Form',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+    return Scaffold(
+
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 32,
           ),
-          SizedBox(height: 5),
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              GestureDetector(
-                onTap: getImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _image != null
-                      ? FileImage(_image!) as ImageProvider<Object>?
-                      : AssetImage('assets/profile.png'),
+              const SizedBox(
+                height: 24,
+              ),
+              Stack(
+                children: [
+                  _image != null
+                      ? CircleAvatar(
+                    radius: 64,
+                    backgroundImage: MemoryImage(_image!),
+                  )
+                      : const CircleAvatar(
+                    radius: 64,
+                    backgroundImage: NetworkImage(
+                        'https://th.bing.com/th?id=OIP.7G6XwS4BzQWHQl-VoyvCFgHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'),
+                  ),
+                  Positioned(
+                    bottom: -10,
+                    left: 80,
+                    child: IconButton(
+                      onPressed: selectImage,
+                      icon: const Icon(Icons.add_a_photo),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Name',
+                  contentPadding: EdgeInsets.all(10),
+                  border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: getImage,
-                child: Text('Add Photo'),
+              const SizedBox(
+                height: 24,
               ),
+              TextField(
+                controller: bioController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Description',
+                  contentPadding: EdgeInsets.all(10),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              TextField(
+                controller: _priceController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter price',
+                  contentPadding: EdgeInsets.all(10),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: saveProfile,
+                child: const Text('Save Profile'),
+              )
             ],
           ),
-          SizedBox(height: 5),
-          TextField(
-            controller: _serviceNameController,
-            decoration: InputDecoration(labelText: 'Service Name'),
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: _descriptionController,
-            maxLines: 3,
-            decoration: InputDecoration(labelText: 'Service Description'),
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: _priceController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: 'Service Price'),
-          ),
-          SizedBox(height: 5),
-          ElevatedButton(
-            // Inside onPressed method of ElevatedButton in ServiceForm
-            onPressed: () async {
-              String serviceName = _serviceNameController.text;
-              String serviceDescription = _descriptionController.text;
-              double servicePrice =
-                  double.tryParse(_priceController.text) ?? 0.0;
-
-              // Creating a map representing the service data
-              Map<String, dynamic> serviceData = {
-                'name': serviceName,
-                'description': serviceDescription,
-                'price': servicePrice,
-                // Add other necessary fields
-              };
-
-              try {
-                // Get Firestore instance
-                FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-                // Add the service data to Firestore
-                await firestore.collection('services').add(serviceData);
-
-                // Show success message or navigate to another screen upon successful addition
-                // (You can add your logic here)
-
-                // Reset the form after submission
-                _serviceNameController.clear();
-                _descriptionController.clear();
-                _priceController.clear();
-              } catch (e) {
-                // Handle errors here (e.g., show error message)
-                print('Error: $e');
-              }
-            },
-
-            child: Text('Submit'),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
-
 class ProfileForm extends StatefulWidget {
   const ProfileForm({Key? key}) : super(key: key);
 

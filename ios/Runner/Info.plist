@@ -45,5 +45,16 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow access to photo library</string>
+
+	<key>NSCameraUsageDescription</key>
+    	<string>Camera usage</string>
+    	<key>NSMicrophoneUsageDescription</key>
+        	<string>Microphone usage</string>
+        	<key>NSPhotoLibraryUsageDescription</key>
+            <string>Permission to access the photo library</string>
+
+
 </dict>
 </plist>

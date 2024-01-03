@@ -66,13 +66,25 @@ class _SettingState extends State<Setting> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                setState(() {
-                                  selectedStylist = 1;
-                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                      appBar: AppBar(
+                                        title: Text('Add Service'),
+                                      ),
+                                      body: ServiceForm(
+                                        addServiceToListScreen: (Services) {}, // Pass necessary parameters here
+                                      ),
+                                    ),
+                                  ),
+                                );
                               },
                               child: Text('Add Service'),
                               style: getStylistButtonStyle(1),
                             ),
+
+
                             SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: () {
@@ -138,4 +150,3 @@ class _SettingState extends State<Setting> {
     );
   }
 }
-

@@ -76,7 +76,7 @@ class _Stylist1State extends State<Stylist1> {
                   Padding(padding: EdgeInsets.only(left: 30)),
                   ClipRRect(
                     child: Image.asset(
-                     'assets/Scissors-image-remove.png',
+                      'assets/Scissors-image-remove.png',
                       height: 80,
                       width: 80,
                     ),
@@ -246,8 +246,8 @@ class HorizontalWeekCalendarPackage extends StatefulWidget {
   final Map<String, Color> buttonColors;
   final Function(String) onToggleColor;
   final String stylistName;
- final List<Services> selectedServices;
- final double totalAmount;
+  final List<Services> selectedServices;
+  final double totalAmount;
 
 
   const HorizontalWeekCalendarPackage({
@@ -311,7 +311,7 @@ class _HorizontalWeekCalendarPackageState
                 );
               }
             },
-            style: ElevatedButton.styleFrom(primary: Colors.brown),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.brown),
             child: Text(
               'BOOK YOUR APPOINTMENT',
               style: GoogleFonts.openSans(
@@ -363,13 +363,13 @@ class _HorizontalWeekCalendarPackageState
             SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: widget.buttonColors[time],
+                backgroundColor: widget.buttonColors[time],
                 fixedSize: Size(100, 35),
               ),
               onPressed: () {
                 widget.onToggleColor(time);
               },
-              child: Text(time, style: TextStyle(color: (Colors.white),fontSize: 12),),
+              child: Text(time, style: const TextStyle(color: (Colors.white),fontSize: 12),),
             ),
           ],
         ),

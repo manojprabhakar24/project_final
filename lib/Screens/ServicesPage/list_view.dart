@@ -1,4 +1,9 @@
+import 'dart:html';
+
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,17 +40,14 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _fetchServices() async {
     try {
-      // Access Firestore collection named 'services'
-      QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('services').get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('userProfile').get();
 
-      // Extract documents from QuerySnapshot
       List<Services> services = querySnapshot.docs.map((doc) {
         return Services(
           name: doc['name'] as String,
-          description: doc['description'] as String,
-          price: doc['price'].toString(), images: '', // Convert integer to string here
-
+          description: doc['bio'] as String,
+          images: doc['imageLink'] as String, // Check if 'imageLink' is the correct field name
+          price: doc['price'].toString(),
           // Add other necessary fields
         );
       }).toList();
@@ -54,10 +56,13 @@ class _ListScreenState extends State<ListScreen> {
         servicesList = services;
       });
     } catch (e) {
-      // Handle errors here (e.g., show error message)
       print('Error fetching services: $e');
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -139,12 +144,19 @@ class _ListScreenState extends State<ListScreen> {
                                     children: [
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
-                                        child: Image.asset(
+                                        child: Image.network(
                                           service.images,
                                           height: 55,
                                           width: 85,
                                           fit: BoxFit.cover,
-                                        ),
+                                          errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                            // Placeholder or error image
+                                            return Placeholder(
+                                              child: Image.network('https://th.bing.com/th?id=OIP.DAuF8ksdA5Kjh7fLifDpnwHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'),
+                                            ); // Replace this with your custom error image widget
+                                          },
+                                        )
+
                                       ),
                                       SizedBox(width: 8),
                                       Expanded(

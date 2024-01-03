@@ -33,7 +33,7 @@ class MyApp1 extends StatelessWidget {
           ),
           child: Container(
             decoration:
-                BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
+            BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
             child: ListView(
               children: [
                 Column(
@@ -91,21 +91,21 @@ class MyApp1 extends StatelessWidget {
                                 stylistData[0],
                                 Stylist1(
                                     stylistName: stylistData[0]['stylistName']
-                                        as String,
-                                selectedServices:selectedServices,
-                                totalAmount:totalAmount)),
+                                    as String,
+                                    selectedServices:selectedServices,
+                                    totalAmount:totalAmount)),
                             StylistCard(
                                 stylistData[1],
                                 Stylist2(
                                     stylistName: stylistData[1]['stylistName']
-                                        as String,
+                                    as String,
                                     selectedServices:selectedServices,
                                     totalAmount:totalAmount)),
                             StylistCard(
                                 stylistData[2],
                                 Stylist3(
                                     stylistName: stylistData[2]['stylistName']
-                                        as String,
+                                    as String,
                                     selectedServices:selectedServices,
                                     totalAmount:totalAmount)),
                           ],
