@@ -230,13 +230,13 @@ class _LoginPageState extends State<LoginPage>
                                   ),
                                   SizedBox(height: 10),
                                   TextFormField(
-
                                     cursorColor: Colors.brown,
                                     controller: _phoneController,
                                     keyboardType: TextInputType.phone,
                                     inputFormatters: <TextInputFormatter>[
                                       FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(10), // Limit to 10 digits
+                                      LengthLimitingTextInputFormatter(10),
+                                      // Limit to 10 digits
                                     ],
                                     decoration: InputDecoration(
                                       prefixText: "+91 ",
@@ -247,7 +247,6 @@ class _LoginPageState extends State<LoginPage>
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                         ),
-
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -411,12 +410,6 @@ class _LoginPageState extends State<LoginPage>
                                                                               _nameController.text,
                                                                           phoneNumber:
                                                                               _phoneController.text,
-                                                                          selectedDate:
-                                                                              widget.selectedDate,
-                                                                          selectedTimeSlots:
-                                                                              widget.selectedTimeSlots,
-                                                                          stylistName:
-                                                                              widget.stylistName,
                                                                         ), // Navigate to the next page on success
                                                                       ),
                                                                     );

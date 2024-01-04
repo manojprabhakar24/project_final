@@ -6,7 +6,8 @@ final FirebaseStorage _storage = FirebaseStorage.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class StoreData {
-  Future<String> uploadImageToStorage(String folderName, String imageName, Uint8List file) async {
+  Future<String> uploadImageToStorage(
+      String folderName, String imageName, Uint8List file) async {
     Reference ref = _storage.ref().child(folderName).child(imageName);
     UploadTask uploadTask = ref.putData(file);
     TaskSnapshot snapshot = await uploadTask;
@@ -23,11 +24,12 @@ class StoreData {
     String resp = " Some Error Occurred";
     try {
       if (name.isNotEmpty || bio.isNotEmpty) {
-        String imageUrl = await uploadImageToStorage('profileImages', name, file);
+        String imageUrl =
+            await uploadImageToStorage('profileImages', name, file);
         await _firestore.collection('userProfile').add({
           'name': name,
           'bio': bio,
-          'price':price,
+          'price': price,
           'imageLink': imageUrl,
         });
 

@@ -1,7 +1,6 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,7 +20,6 @@ class ServiceForm extends StatefulWidget {
 }
 
 class _ServiceFormState extends State<ServiceForm> {
-
   TextEditingController _priceController = TextEditingController();
   Uint8List? _image;
   final TextEditingController nameController = TextEditingController();
@@ -86,105 +84,99 @@ class _ServiceFormState extends State<ServiceForm> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 32,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 24,
-              ),
-              Stack(
-                children: [
-                  _image != null
-                      ? CircleAvatar(
-                    radius: 64,
-                    backgroundImage: MemoryImage(_image!),
-                  )
-                      : const CircleAvatar(
-                    radius: 64,
-                    backgroundImage: NetworkImage(
-                        'https://th.bing.com/th?id=OIP.7G6XwS4BzQWHQl-VoyvCFgHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'),
-                  ),
-                  Positioned(
-                    bottom: -10,
-                    left: 90,
-                    child: IconButton(
-                      onPressed: selectImage,
-                      icon: const Icon(Icons.add_a_photo),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Name',
-                  contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(),
+        body: Center(
+            child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
                 ),
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextField(
-                controller: bioController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter Description',
-                  contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextField(
-                controller: _priceController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                ],
-                decoration: const InputDecoration(
-                  hintText: 'Enter price',
-                  contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 5,),
-              ElevatedButton(
-                onPressed: saveProfile,
-                child: const Text('Save Profile'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.green, // Change the button color
-                    onPrimary: Colors.white, // Change the text color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0), // Round the button corners
-                    ),
-              ),
-
-              )]))));
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Stack(
+                        children: [
+                          _image != null
+                              ? CircleAvatar(
+                                  radius: 64,
+                                  backgroundImage: MemoryImage(_image!),
+                                )
+                              : const CircleAvatar(
+                                  radius: 64,
+                                  backgroundImage: NetworkImage(
+                                      'https://th.bing.com/th?id=OIP.7G6XwS4BzQWHQl-VoyvCFgHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'),
+                                ),
+                          Positioned(
+                            bottom: -10,
+                            left: 90,
+                            child: IconButton(
+                              onPressed: selectImage,
+                              icon: const Icon(Icons.add_a_photo),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Name',
+                          contentPadding: EdgeInsets.all(10),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      TextField(
+                        controller: bioController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Description',
+                          contentPadding: EdgeInsets.all(10),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      TextField(
+                        controller: _priceController,
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d+\.?\d{0,2}')),
+                        ],
+                        decoration: const InputDecoration(
+                          hintText: 'Enter price',
+                          contentPadding: EdgeInsets.all(10),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      ElevatedButton(
+                        onPressed: saveProfile,
+                        child: const Text('Save Profile'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green, // Change the button color
+                          onPrimary: Colors.white, // Change the text color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                8.0), // Round the button corners
+                          ),
+                        ),
+                      )
+                    ]))));
   }
 }
-
-
-
-
-
-
-
-
 
 class UpdateForm extends StatefulWidget {
   @override
@@ -196,7 +188,7 @@ class _UpdateFormState extends State<UpdateForm> {
 
   Future<void> deleteDataByName(String nameToDelete) async {
     CollectionReference services =
-    FirebaseFirestore.instance.collection('userProfile');
+        FirebaseFirestore.instance.collection('userProfile');
 
     try {
       if (nameToDelete.isEmpty) {
@@ -210,7 +202,7 @@ class _UpdateFormState extends State<UpdateForm> {
       }
 
       QuerySnapshot querySnapshot =
-      await services.where('name', isEqualTo: nameToDelete).get();
+          await services.where('name', isEqualTo: nameToDelete).get();
 
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         await doc.reference.delete();

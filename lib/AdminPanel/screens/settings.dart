@@ -108,17 +108,21 @@ class _SettingState extends State<Setting> {
                   flex: 2,
                   child: selectedStylist == 1
                       ? Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ServiceForm(
-                      addServiceToListScreen: (Services) {},
-                    ),
-                  )
-                      : selectedStylist == 3
-                      ? Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: UpdateForm(),
-                  )
-                      : SizedBox(),
+                          padding: const EdgeInsets.all(16.0),
+                          child: ServiceForm(
+                            addServiceToListScreen: (Services) {},
+                          ),
+                        )
+                      : selectedStylist == 2
+                          ? Padding(
+                              padding: const EdgeInsets.all(16.0),
+                            )
+                          : selectedStylist == 3
+                              ? Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: UpdateForm(),
+                                )
+                              : SizedBox(),
                 ),
               ],
             ),

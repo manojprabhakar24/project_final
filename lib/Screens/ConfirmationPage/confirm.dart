@@ -1,26 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 class ConfirmationScreen extends StatelessWidget {
-
   final String name;
   final String phoneNumber;
-  final DateTime selectedDate;
-  final List<String> selectedTimeSlots;
-  final String stylistName;
 
   const ConfirmationScreen({
     required this.name,
     required this.phoneNumber,
-    required this.selectedDate,
-    required this.selectedTimeSlots, required this.stylistName,
-
   });
-
-  String formattedDate(DateTime date) {
-    return DateFormat.yMMMMd().format(date);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +24,9 @@ class ConfirmationScreen extends StatelessWidget {
             ),
           ),
           Container(
-            decoration: BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
+            decoration:
+                BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
           ),
-
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -58,123 +46,16 @@ class ConfirmationScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 50),
-
-              Container(
-                width: 350,
-                height:290,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                    bottom: Radius.circular(20),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white54.withOpacity(0.5),
-                      spreadRadius: 8,
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0)),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(padding: EdgeInsets.only(top: 2)),
-                        Image.asset(
-                          'assets/tick.jpg',
-                          width: 85,
-                          height: 70,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                "Booking is Confirmed ",
-                                style: GoogleFonts.openSans(
-                                  fontSize: 20,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                )
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "Name : $name",
-                              style: GoogleFonts.openSans(
-                                fontSize: 17,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              "Mobile Number : $phoneNumber",
-                              style: GoogleFonts.openSans(
-                                fontSize: 17,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Divider(
-                      color: Colors.black54,
-                      thickness: 2,
-                      indent: 20,
-                      endIndent: 20,
-                    ),
-                    SizedBox(height: 10),
-                    Center(
-                      child: Column(
-                          children: [
-                            Text(
-                              "Scissor's",
-                              style: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 30, color: Colors.black),
-                            ),
-                            Icon(
-                              Icons.calendar_month_sharp,
-                              size: 30,
-                              color: Colors.blueGrey,
-                            ),
-                            Text(
-                              'Selected Stylist: $stylistName',
-                              style: GoogleFonts.openSans(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Selected Time Slots: ${selectedTimeSlots.join(",")}',
-                              style: GoogleFonts.openSans(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Selected Date: ${formattedDate(selectedDate)}',
-                              style: GoogleFonts.openSans(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-
-                            SizedBox(height: 5,),
-                          ]
-                      ),
-                    ),
-                  ],
+              Text(
+                "The Booking is Confirmed for $name and +91 $phoneNumber"
+                "Please Wait For The Message From Saloon",
+                style: GoogleFonts.openSans(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+              // You can add more widgets for additional details here
             ],
           ),
         ],

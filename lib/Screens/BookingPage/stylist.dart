@@ -20,7 +20,7 @@ class MyApp1 extends StatelessWidget {
     required this.stylistName,
     required this.description,
   }) : super(key: key);
-
+  late List<Services> stylist = [];
 
   @override
   Widget build(BuildContext context) {
