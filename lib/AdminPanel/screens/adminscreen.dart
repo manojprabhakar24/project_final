@@ -85,68 +85,7 @@ class _ServiceFormState extends State<ServiceForm> {
       });
     }
   }
-  Future<void> deleteDataByName(String nameToDelete) async {
-    CollectionReference services = FirebaseFirestore.instance.collection('userProfile');
 
-    try {
-      QuerySnapshot querySnapshot =
-      await services.where('name', isEqualTo: nameToDelete).get();
-
-      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('The Service $nameToDelete deleted successfully!'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } catch (e) {
-      print('Error deleting data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to delete data. Please try again.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
-
-  void openModalBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        TextEditingController deleteNameController = TextEditingController();
-
-        return Container(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextField(
-                controller: deleteNameController,
-                decoration: InputDecoration(
-                  hintText: 'Enter Name to Delete',
-                ),
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  String nameToDelete = deleteNameController.text;
-                  deleteDataByName(nameToDelete); // Call your delete method here
-                  Navigator.pop(context); // Close the bottom sheet after deletion
-                },
-                child: Text('Delete'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
 
   @override
@@ -223,202 +162,122 @@ class _ServiceFormState extends State<ServiceForm> {
                   border: OutlineInputBorder(),
                 ),
               ),
+              SizedBox(height: 5,),
               ElevatedButton(
                 onPressed: saveProfile,
                 child: const Text('Save Profile'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.green, // Change the button color
+                    onPrimary: Colors.white, // Change the text color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0), // Round the button corners
+                    ),
               ),
-    InkWell(
-    onTap: openModalBottomSheet,
-    child: Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Text(
-    'Click here to delete data',
-    style: TextStyle(
-    decoration: TextDecoration.underline,
-    color: Colors.blue,
-    ),
-    ),
-    ),
-    ),
-    ]))));
+
+              )]))));
   }
 }
-class ProfileForm extends StatefulWidget {
-  const ProfileForm({Key? key}) : super(key: key);
 
+
+
+
+
+
+
+
+
+class UpdateForm extends StatefulWidget {
   @override
-  State<ProfileForm> createState() => _ProfileFormState();
+  State<UpdateForm> createState() => _UpdateFormState();
 }
 
-class _ProfileFormState extends State<ProfileForm> {
-  TextEditingController _profileNameController = TextEditingController();
-  TextEditingController _expertiseController = TextEditingController();
-  File? _profileImage;
-  final ImagePicker _picker = ImagePicker();
+class _UpdateFormState extends State<UpdateForm> {
+  TextEditingController deleteTextController = TextEditingController();
 
-  Future getProfileImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  Future<void> deleteDataByName(String nameToDelete) async {
+    CollectionReference services =
+    FirebaseFirestore.instance.collection('userProfile');
 
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = File(pickedFile.path);
-      });
+    try {
+      if (nameToDelete.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please enter text to delete.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return; // Stop execution if the text field is empty
+      }
+
+      QuerySnapshot querySnapshot =
+      await services.where('name', isEqualTo: nameToDelete).get();
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('The Service $nameToDelete deleted successfully!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      print('Error deleting data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete data. Please try again.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Add Profile Form',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: getProfileImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _profileImage != null
-                      ? FileImage(_profileImage!) as ImageProvider<Object>?
-                      : AssetImage('assets/profile.png'),
-                ),
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: deleteTextController,
+              decoration: InputDecoration(
+                labelText: 'e.g., Haircut',
+                border: OutlineInputBorder(),
               ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: getProfileImage,
-                child: Text('Add Photo'),
-              ),
-            ],
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: _profileNameController,
-            decoration: InputDecoration(labelText: 'Profile Name'),
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: _expertiseController,
-            decoration: InputDecoration(labelText: 'Expertise'),
-          ),
-          SizedBox(height: 5),
-          ElevatedButton(
-            onPressed: () {
-
-              _profileNameController.clear();
-              _expertiseController.clear();
-              setState(() {
-              });
-            },
-            child: Text('Submit'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PriceUpdateForm extends StatefulWidget {
-  final TextEditingController oldPriceController;
-  final TextEditingController newPriceController1;
-  final TextEditingController confirmPriceController2;
-
-  const PriceUpdateForm({
-    Key? key,
-    required this.oldPriceController,
-    required this.newPriceController1,
-    required this.confirmPriceController2,
-  }) : super(key: key);
-
-  @override
-  State<PriceUpdateForm> createState() => _PriceUpdateFormState();
-}
-
-class _PriceUpdateFormState extends State<PriceUpdateForm> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Update Price Form',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
             ),
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: widget.oldPriceController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: 'Old Price'),
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: widget.newPriceController1,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: 'New Price'),
-          ),
-          SizedBox(height: 5),
-          TextField(
-            controller: widget.confirmPriceController2,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: 'Confirm Price'),
-          ),
-          SizedBox(height: 5),
-
-// Your existing PriceUpdateForm code...
-
-          ElevatedButton(
-            onPressed: () async {
-              double oldPrice =
-                  double.tryParse(widget.oldPriceController.text) ?? 0.0;
-              double newPrice1 =
-                  double.tryParse(widget.newPriceController1.text) ?? 0.0;
-              double newPrice2 =
-                  double.tryParse(widget.confirmPriceController2.text) ?? 0.0;
-
-              // Use 'oldPrice', 'newPrice1', and 'newPrice2' as needed for your logic
-
-              // Update Firestore document here
-              try {
-                // Replace 'yourCollection' and 'yourDocumentId' with your Firestorm collection and document IDs
-                await FirebaseFirestore.instance
-                    .collection('services')
-                    .doc('yourDocumentId')
-                    .update({
-                  'oldPrice': oldPrice,
-                  'newPrice1': newPrice1,
-                  'newPrice2': newPrice2,
-                  // Add other fields as necessary
-                });
-
-                // Reset the form after successful submission
-                widget.oldPriceController.clear();
-                widget.newPriceController1.clear();
-                widget.confirmPriceController2.clear();
-
-                // Show a success message or perform any additional actions
-              } catch (e) {
-                // Handle errors, show an error message, or perform fallback actions
-                print('Error updating prices: $e');
-              }
-            },
-            child: Text('Update Price'),
-          ),
-        ],
+            SizedBox(height: 20),
+            Center(
+              child: Column(
+                children: [
+                  Container(
+                    height: 40,
+                    width: 170,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        String textToDelete = deleteTextController.text;
+                        deleteDataByName(textToDelete);
+                        deleteTextController.clear(); // Clear the text field
+                      },
+                      icon: Icon(Icons.delete),
+                      label: Text('Delete'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                        onPrimary: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

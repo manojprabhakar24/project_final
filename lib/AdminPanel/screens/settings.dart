@@ -1,5 +1,6 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'adminscreen.dart';
 
 class Setting extends StatefulWidget {
@@ -11,133 +12,113 @@ class Setting extends StatefulWidget {
 
 class _SettingState extends State<Setting> {
   int selectedStylist = 0;
-  ButtonStyle selectedButtonStyle = ElevatedButton.styleFrom(
-    primary: Colors.white,
-  );
-
-  ButtonStyle getStylistButtonStyle(int stylistId) {
-    return selectedStylist == stylistId
-        ? ElevatedButton.styleFrom(
-      primary: Colors.blueAccent,
-    )
-        : selectedButtonStyle;
-  }
-  TextEditingController _oldPriceController = TextEditingController();
-  TextEditingController _newPriceController = TextEditingController();
-  TextEditingController _confirmPriceController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: 20),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Service Setting',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Divider(
-                  thickness: 2.0,
-                  color: Colors.black,
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Service Settings',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 2),
-          Container(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Divider(
+            thickness: 2.0,
+            color: Colors.black,
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: Row(
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Scaffold(
-                                      appBar: AppBar(
-                                        title: Text('Add Service'),
-                                      ),
-                                      body: ServiceForm(
-                                        addServiceToListScreen: (Services) {}, // Pass necessary parameters here
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Text('Add Service'),
-                              style: getStylistButtonStyle(1),
-                            ),
-
-
-                            SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  selectedStylist = 2;
-                                });
-                              },
-                              child: Text('Add Profile'),
-                              style: getStylistButtonStyle(2),
-                            ),
-                            SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  selectedStylist = 3;
-                                });
-                              },
-                              child: Text('Update Price'),
-                              style: getStylistButtonStyle(3),
-                            ),
-
-                            const Divider(
-                              thickness: 2.0,
-                              color: Colors.black,
-                            ),
-
-                          ],
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedStylist = 1;
+                          });
+                        },
+                        child: Text(
+                          "Add Services",
+                          style: TextStyle(
+                            color: selectedStylist == 1
+                                ? Colors.white
+                                : Colors.black,
+                          ),
                         ),
-                        if (selectedStylist == 1)
-                          SizedBox(width: 20),
-                        if (selectedStylist == 1)
-                          Expanded(
-                            child: ServiceForm(addServiceToListScreen: (Services ) {  },),
+                        style: ElevatedButton.styleFrom(
+                          primary: selectedStylist == 1
+                              ? Colors.indigo
+                              : Colors.white,
+                          onPrimary: Colors.white,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedStylist = 2;
+                          });
+                        },
+                        child: Text(
+                          "Add Stylist",
+                          style: TextStyle(
+                            color: selectedStylist == 2
+                                ? Colors.white
+                                : Colors.black,
                           ),
-                        if (selectedStylist == 2)
-                          SizedBox(width: 20),
-
-                        if (selectedStylist == 3)
-                          SizedBox(width: 20),
-                        if (selectedStylist == 3)
-                          Expanded(
-                            child:  PriceUpdateForm(
-                              oldPriceController: _oldPriceController,
-                              newPriceController1: _newPriceController,
-                              confirmPriceController2: _confirmPriceController,
-
-
-                            ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: selectedStylist == 2
+                              ? Colors.indigo
+                              : Colors.white,
+                          onPrimary: Colors.white,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedStylist = 3;
+                          });
+                        },
+                        child: Text(
+                          "Delete Services",
+                          style: TextStyle(
+                            color: selectedStylist == 3
+                                ? Colors.white
+                                : Colors.black,
                           ),
-
-                      ],
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: selectedStylist == 3
+                              ? Colors.indigo
+                              : Colors.white,
+                          onPrimary: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: selectedStylist == 1
+                      ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ServiceForm(
+                      addServiceToListScreen: (Services) {},
                     ),
-                  ],
+                  )
+                      : selectedStylist == 3
+                      ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: UpdateForm(),
+                  )
+                      : SizedBox(),
                 ),
               ],
             ),
