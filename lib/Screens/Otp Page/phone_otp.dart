@@ -211,12 +211,12 @@ class _LoginPageState extends State<LoginPage>
                                             fontWeight: FontWeight.bold),
                                       ),
                                       enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                             color: Colors.brown, width: 1.0),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                             color: Colors.brown, width: 1.0),
                                         borderRadius: BorderRadius.circular(8),
                                       ),

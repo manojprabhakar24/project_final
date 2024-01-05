@@ -353,7 +353,7 @@ class _ListScreenState extends State<ListScreen> {
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp1(
                               selectedServices:selectedServices,
-                              totalAmount:totalAmount, stylistName: '', description: '',
+                              totalAmount:totalAmount, stylistName: '', expertise: '', description: '',
                             )));
                           },
                           fillColor: Colors.brown[900],

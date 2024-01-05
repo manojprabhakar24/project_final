@@ -21,6 +21,8 @@ class ServiceForm extends StatefulWidget {
 
 class _ServiceFormState extends State<ServiceForm> {
   TextEditingController _priceController = TextEditingController();
+  TextEditingController deleteTextController = TextEditingController();
+
   Uint8List? _image;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
@@ -84,38 +86,79 @@ class _ServiceFormState extends State<ServiceForm> {
     }
   }
 
+  Future<void> deleteDataByName(String nameToDelete) async {
+    CollectionReference services =
+    FirebaseFirestore.instance.collection('userProfile');
+
+    try {
+      if (nameToDelete.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please enter text to delete.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return; // Stop execution if the text field is empty
+      }
+
+      QuerySnapshot querySnapshot =
+      await services.where('name', isEqualTo: nameToDelete).get();
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('The Service $nameToDelete deleted successfully!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      print('Error deleting data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete data. Please try again.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
             child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                ),
+
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                        height: 24,
-                      ),
+
                       Stack(
                         children: [
                           _image != null
                               ? CircleAvatar(
-                                  radius: 64,
+                                  radius: 40,
                                   backgroundImage: MemoryImage(_image!),
                                 )
                               : const CircleAvatar(
-                                  radius: 64,
+
+                                  radius: 43,
+                                     backgroundColor: Colors.brown,
                                   backgroundImage: NetworkImage(
-                                      'https://th.bing.com/th?id=OIP.7G6XwS4BzQWHQl-VoyvCFgHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'),
+
+                                      'https://th.bing.com/th?id=OIP.7G6XwS4BzQWHQl-VoyvCFgHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2',
+
+                                  ),
                                 ),
                           Positioned(
                             bottom: -10,
-                            left: 90,
+                            left: 52,
                             child: IconButton(
                               onPressed: selectImage,
-                              icon: const Icon(Icons.add_a_photo),
+                              icon: const Icon(Icons.add_a_photo,color: Colors.lightGreen,),
                             ),
                           )
                         ],
@@ -160,7 +203,7 @@ class _ServiceFormState extends State<ServiceForm> {
                         ),
                       ),
                       SizedBox(
-                        height: 5,
+                        height: 10,
                       ),
                       ElevatedButton(
                         onPressed: saveProfile,
@@ -173,22 +216,138 @@ class _ServiceFormState extends State<ServiceForm> {
                                 8.0), // Round the button corners
                           ),
                         ),
-                      )
+                      ),
+                      SizedBox(height: 10),
+                      Center(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Delete Stylist'),
+                                      content: TextField(
+                                        controller: deleteTextController,
+                                        decoration: InputDecoration(
+                                          labelText: 'Enter Stylist Name ',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                      actions: <Widget>[
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            String textToDelete = deleteTextController.text;
+                                            deleteDataByName(textToDelete);
+                                            deleteTextController.clear(); // Clear the text field
+                                            Navigator.of(context).pop(); // Close the dialog
+                                          },
+                                          child: Text('Delete'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // Close the dialog
+                                          },
+                                          child: Text('Cancel'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text(
+                                'Delete Here',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    decoration: TextDecoration.underline,fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+
+
+                          ],
+                        ),
+                      ),
                     ]))));
   }
 }
 
-class UpdateForm extends StatefulWidget {
+
+
+
+
+class StylistForm extends StatefulWidget {
+  final Function(Services) addServiceToListScreen; // Function reference
+
+  StylistForm({Key? key, required this.addServiceToListScreen})
+      : super(key: key);
+
   @override
-  State<UpdateForm> createState() => _UpdateFormState();
+  _StylistFormState createState() => _StylistFormState();
 }
 
-class _UpdateFormState extends State<UpdateForm> {
-  TextEditingController deleteTextController = TextEditingController();
+class _StylistFormState extends State<StylistForm> {
+  TextEditingController deleteTextController1 = TextEditingController();
+  Uint8List? _image;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController expertiseController = TextEditingController();
 
-  Future<void> deleteDataByName(String nameToDelete) async {
+  // ...
+  void selectImage() async {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = img;
+    });
+  }
+  void saveStylist() async {
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please add an image.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    String stylistName = nameController.text;
+    String expertise = expertiseController.text;
+
+    if (stylistName.isEmpty || expertise.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill in all fields.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    String resp = await StoreData(). saveStylistData(
+      stylistName: stylistName,
+      expertise: expertise,
+      file: _image!,
+    );
+
+    if (resp == 'success') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Stylist data saved successfully!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      nameController.clear();
+      expertiseController.clear();
+
+      setState(() {
+        _image = null;
+      });
+    }
+  }
+  Future<void> deleteDataByName1(String nameToDelete) async {
     CollectionReference services =
-        FirebaseFirestore.instance.collection('userProfile');
+    FirebaseFirestore.instance.collection('stylistProfile');
 
     try {
       if (nameToDelete.isEmpty) {
@@ -202,7 +361,7 @@ class _UpdateFormState extends State<UpdateForm> {
       }
 
       QuerySnapshot querySnapshot =
-          await services.where('name', isEqualTo: nameToDelete).get();
+      await services.where('stylistName', isEqualTo: nameToDelete).get();
 
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         await doc.reference.delete();
@@ -210,7 +369,7 @@ class _UpdateFormState extends State<UpdateForm> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('The Service $nameToDelete deleted successfully!'),
+          content: Text('The Stylist $nameToDelete deleted successfully!'),
           duration: Duration(seconds: 2),
         ),
       );
@@ -227,50 +386,134 @@ class _UpdateFormState extends State<UpdateForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: deleteTextController,
-              decoration: InputDecoration(
-                labelText: 'e.g., Haircut',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: Column(
-                children: [
-                  Container(
-                    height: 40,
-                    width: 170,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        String textToDelete = deleteTextController.text;
-                        deleteDataByName(textToDelete);
-                        deleteTextController.clear(); // Clear the text field
-                      },
-                      icon: Icon(Icons.delete),
-                      label: Text('Delete'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.red,
-                        onPrimary: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+    return Scaffold(
+        body: Center(
+            child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Stack(
+                        children: [
+                          _image != null
+                              ? CircleAvatar(
+                            radius: 40,
+                            backgroundImage: MemoryImage(_image!),
+                          )
+                              : const CircleAvatar(
+                            backgroundColor: Colors.brown,
+                            radius: 43,
+                            backgroundImage: NetworkImage(
+                                'https://th.bing.com/th?id=OIP.7G6XwS4BzQWHQl-VoyvCFgHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'),
+                          ),
+                          Positioned(
+                            bottom: -10,
+                            left: 52,
+                            child: IconButton(
+                              onPressed: selectImage,
+                              icon: const Icon(Icons.add_a_photo,color: Colors.lightGreen,),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Name',
+                          contentPadding: EdgeInsets.all(10),
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      TextField(
+                        controller: expertiseController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Description',
+                          contentPadding: EdgeInsets.all(10),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+
+
+                      SizedBox(
+                        height: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: saveStylist,
+                        child: const Text('Save Profile'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green, // Change the button color
+                          onPrimary: Colors.white, // Change the text color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                8.0), // Round the button corners
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Center(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Delete Stylist'),
+                                      content: TextField(
+                                        controller: deleteTextController1,
+                                        decoration: InputDecoration(
+                                          labelText: 'Enter Stylist Name ',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                      actions: <Widget>[
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            String textToDelete = deleteTextController1.text;
+                                            deleteDataByName1(textToDelete);
+                                            deleteTextController1.clear(); // Clear the text field
+                                            Navigator.of(context).pop(); // Close the dialog
+                                          },
+                                          child: Text('Delete'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // Close the dialog
+                                          },
+                                          child: Text('Cancel'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text(
+                                'Delete Here',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  decoration: TextDecoration.underline,fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+
+
+                          ],
+                        ),
+                      ),
+                    ]))));
   }
 }
+
+

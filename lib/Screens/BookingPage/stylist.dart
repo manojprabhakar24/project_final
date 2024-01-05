@@ -18,7 +18,7 @@ class MyApp1 extends StatelessWidget {
     required this.selectedServices,
     required this.totalAmount,
     required this.stylistName,
-    required this.description,
+    required this.description, required String expertise,
   }) : super(key: key);
   late List<Services> stylist = [];
 

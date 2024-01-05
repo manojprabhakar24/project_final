@@ -9,7 +9,6 @@ class Setting extends StatefulWidget {
   @override
   State<Setting> createState() => _SettingState();
 }
-
 class _SettingState extends State<Setting> {
   int selectedStylist = 0;
 
@@ -57,6 +56,13 @@ class _SettingState extends State<Setting> {
                               ? Colors.indigo
                               : Colors.white,
                           onPrimary: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 12.0, // Adjusted padding
+                            horizontal: 24.0,
+                          ),
                         ),
                       ),
                       ElevatedButton(
@@ -78,27 +84,13 @@ class _SettingState extends State<Setting> {
                               ? Colors.indigo
                               : Colors.white,
                           onPrimary: Colors.white,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            selectedStylist = 3;
-                          });
-                        },
-                        child: Text(
-                          "Delete Services",
-                          style: TextStyle(
-                            color: selectedStylist == 3
-                                ? Colors.white
-                                : Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: selectedStylist == 3
-                              ? Colors.indigo
-                              : Colors.white,
-                          onPrimary: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 12.0, // Adjusted padding
+                            horizontal: 24.0,
+                          ),
                         ),
                       ),
                     ],
@@ -108,21 +100,19 @@ class _SettingState extends State<Setting> {
                   flex: 2,
                   child: selectedStylist == 1
                       ? Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: ServiceForm(
-                            addServiceToListScreen: (Services) {},
-                          ),
-                        )
+                    padding: const EdgeInsets.all(16.0),
+                    child: ServiceForm(
+                      addServiceToListScreen: (Services) {},
+                    ),
+                  )
                       : selectedStylist == 2
-                          ? Padding(
-                              padding: const EdgeInsets.all(16.0),
-                            )
-                          : selectedStylist == 3
-                              ? Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: UpdateForm(),
-                                )
-                              : SizedBox(),
+                      ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: StylistForm(
+                      addServiceToListScreen: (Services) {},
+                    ),
+                  )
+                      : const SizedBox(),
                 ),
               ],
             ),
