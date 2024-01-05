@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_final/Screens/BookingPage/stylist1.dart';
@@ -5,122 +6,64 @@ import 'package:project_final/Screens/BookingPage/stylist2.dart';
 import 'package:project_final/Screens/BookingPage/stylist3.dart';
 
 import '../../models/service_list.dart';
-import '../../models/stylist_data.dart';
 
-class MyApp1 extends StatelessWidget {
+
+class MyApp1 extends StatefulWidget {
   final List<Services> selectedServices;
   final double totalAmount;
   final String stylistName; // New parameter
-  final String description; // New parameter
+  final String expertise; // New parameter
 
   MyApp1({
     Key? key,
     required this.selectedServices,
     required this.totalAmount,
     required this.stylistName,
-    required this.description, required String expertise,
+    required this.expertise, required String description,
   }) : super(key: key);
-  late List<Services> stylist = [];
+
+  @override
+  State<MyApp1> createState() => _MyApp1State();
+}
+
+class _MyApp1State extends State<MyApp1> {
+
+  late List<Map<String, dynamic>> stylistData = []; // Initialize with an empty list
+
+  @override
+  void initState() {
+    super.initState();
+    fetchStylistData();
+  }
+
+  Future<void> fetchStylistData() async {
+    try {
+      var snapshot = await FirebaseFirestore.instance.collection('stylistProfile').get();
+      setState(() {
+        stylistData = snapshot.docs.map((doc) => doc.data()).toList();
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Colors.white,
+        // ... (other properties)
         body: Container(
-          decoration: BoxDecoration(
-            color: Colors.white54.withOpacity(0.9),
-            image: DecorationImage(
-              image: AssetImage('assets/background.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            decoration:
-            BoxDecoration(color: Color.fromRGBO(255, 255, 255, 0.8)),
-            child: ListView(
-              children: [
-                Column(
-                  children: <Widget>[
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(padding: EdgeInsets.only(left: 30)),
-                            ClipRRect(
-                              child: Image.asset(
-                                'assets/Scissors-image-remove.png',
-                                height: 80,
-                                width: 80,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Padding(padding: EdgeInsets.only(left: 30)),
-                            Text(
-                              "Scissor's",
-                              style: GoogleFonts.openSans(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(50),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 30),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Hair Stylists',
-                              style: GoogleFonts.openSans(
-                                  fontWeight: FontWeight.bold, fontSize: 25),
-                            ),
-                            StylistCard(
-                                stylistData[0],
-                                Stylist1(
-                                    stylistName: stylistData[0]['stylistName']
-                                    as String,
-                                    selectedServices:selectedServices,
-                                    totalAmount:totalAmount)),
-                            StylistCard(
-                                stylistData[1],
-                                Stylist2(
-                                    stylistName: stylistData[1]['stylistName']
-                                    as String,
-                                    selectedServices:selectedServices,
-                                    totalAmount:totalAmount)),
-                            StylistCard(
-                                stylistData[2],
-                                Stylist3(
-                                    stylistName: stylistData[2]['stylistName']
-                                    as String,
-                                    selectedServices:selectedServices,
-                                    totalAmount:totalAmount)),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
+          // ... (your existing code)
+          child: ListView.builder(
+            itemCount: stylistData.length,
+            itemBuilder: (context, index) {
+              return StylistCard(
+                stylist: stylistData[index],
+                stylistScreen:  Stylist1 (stylist: stylistData[index], stylistName: '', selectedServices: [], totalAmount: 0,), // Replace with your stylist screen widget
+              );
+
+            },
           ),
         ),
       ),
@@ -132,18 +75,15 @@ class StylistCard extends StatelessWidget {
   final Map<String, dynamic> stylist;
   final Widget stylistScreen;
 
-  StylistCard(this.stylist, this.stylistScreen);
+  StylistCard({
+    required this.stylist,
+    required this.stylistScreen,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height / 5.3,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: stylist['bgColor'] as Color ?? Colors.white,
-      ),
+      // ... (your existing code)
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -151,13 +91,14 @@ class StylistCard extends StatelessWidget {
             padding: EdgeInsets.only(top: 10, left: 5, bottom: 10),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(40),
-              child: Image.asset(
-                stylist['imgPth'] as String,
+              child: Image.network(
+                stylist['imageLink'] as String? ?? '', // Replace 'imgPth' with your image URL field
                 width: MediaQuery.of(context).size.width * 0.40,
                 height: MediaQuery.of(context).size.height * 0.15,
               ),
             ),
           ),
+
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(top: 10, left: 10),
@@ -165,7 +106,7 @@ class StylistCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    stylist['stylistName'] as String,
+                    stylist['stylistName'] as String? ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 18,
@@ -173,53 +114,14 @@ class StylistCard extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    stylist['Description'] as String,
+                    stylist['expertise'] as String? ?? '',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey,
                     ),
                   ),
                   SizedBox(height: 10),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.star,
-                        size: 15,
-                        color: Color(0xff4E295B),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        stylist['rating'] as String,
-                        style: TextStyle(
-                          color: Color(0xff4E295B),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  MaterialButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => stylistScreen,
-                        ),
-                      );
-                    },
-                    color: Colors.brown,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Book',
-                      style: TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                  )
+                  // ... (rest of your existing code)
                 ],
               ),
             ),

@@ -16,7 +16,7 @@ class Stylist1 extends StatefulWidget {
     Key? key,
     required this.stylistName,
     required this.selectedServices,
-    required this.totalAmount,
+    required this.totalAmount, required Map<String, dynamic> stylist,
   }) : super(key: key);
 
 
