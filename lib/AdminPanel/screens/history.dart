@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -14,18 +15,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _historyStream = FirebaseFirestore.instance
-        .collection('Users')
-        .where('completed', isEqualTo: true)
-        .snapshots();
+    _historyStream = FirebaseFirestore.instance.collection('History').snapshots();
+  }
+
+  Color getStatusColor(bool completed) {
+    return completed ? Colors.white : Colors.grey.shade300;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('History'),
-      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _historyStream,
         builder: (context, snapshot) {
@@ -33,40 +32,83 @@ class _HistoryScreenState extends State<HistoryScreen> {
             return Center(child: CircularProgressIndicator());
           }
 
-          final completedAppointments = snapshot.data?.docs ?? [];
+          final historyAppointments = snapshot.data?.docs ?? [];
 
-          return ListView.builder(
-            itemCount: completedAppointments.length,
-            itemBuilder: (context, index) {
-              final completedAppointment = completedAppointments[index];
-              final customerName = completedAppointment['name'];
-              final customerPhoneNumber = completedAppointment['phoneNumber'];
-              final bookingSlot = completedAppointment['selectedTimeSlots'];
-              final totalAmount = completedAppointment['totalAmount'];
-              final selectedServices = completedAppointment['selectedServices'];
-              final stylistName =
-              completedAppointment['stylistName']; // Assuming stylistName is a field in your document
-              final selectedDate =
-              completedAppointment['selectedDate']; // Date field from Firestore
-
-              return Card(
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: ListTile(
-                  title: Text(customerName),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Stylist: $stylistName'),
-                      Text('Phone Number: $customerPhoneNumber'),
-                      Text('Booking Slot: $bookingSlot'),
-                      Text('Total Amount: $totalAmount'),
-                      Text('Date: $selectedDate'), // Display the date
-                      Text('Services: $selectedServices'), // Update based on your data structure
-                    ],
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Appointment History',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              );
-            },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: historyAppointments.length,
+                  itemBuilder: (context, index) {
+                    final historyAppointment = historyAppointments[index];
+                    final customerName = historyAppointment['name'];
+                    final customerPhoneNumber = historyAppointment['phoneNumber'];
+                    final bookingSlot = historyAppointment['selectedTimeSlots'];
+                    final totalAmount = historyAppointment['totalAmount'];
+                    final selectedServices = historyAppointment['selectedServices'];
+                    final stylistName = historyAppointment['stylistName'];
+                    final selectedDate =
+                    (historyAppointment['selectedDate'] as Timestamp).toDate();
+                    final formattedDate =
+                    DateFormat('yyyy-MM-dd HH:mm').format(selectedDate);
+                    final completed = historyAppointment['completed'];
+
+                    return Card(
+                      color: getStatusColor(completed),
+                      child: ListTile(
+                        title: Text(
+                          customerName,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Stylist: $stylistName',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Phone Number: $customerPhoneNumber',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Booking Slot: $bookingSlot',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Total Amount: $totalAmount',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Date: $formattedDate',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Services: $selectedServices',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              'Status: ${completed ? 'Completed' : 'Not Completed'}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
