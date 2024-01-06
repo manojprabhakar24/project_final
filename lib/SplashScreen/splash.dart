@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 import '../Screens/LandingScreen/user.dart';
-
 
 
 
@@ -57,7 +55,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
   @override
   Widget build(BuildContext context) {
     String assetsPath = "assets/Scissors-image-remove.png";
-    Color assetsColor = Colors.greenAccent;
+    Color assetsColor = Colors.white;
 
 
     return MaterialApp(
@@ -66,19 +64,13 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
 
         body: Stack(
           children: [
-        Container(
-        decoration: BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage('assets/background.jpg'),
-        fit: BoxFit.cover,
-      ),
-    ),
-    ),
-    Container(
-    decoration: BoxDecoration(
-    color: Color.fromRGBO(255, 255, 255, 0.8),
-    ),
-            child: Center(
+            Image.asset(
+              "assets/first.jpg", // Replace with your image asset path
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+            Center(
               child: ScaleTransition(
                 scale: _scaleAnimation,
                 child: FadeTransition(
@@ -113,7 +105,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen>
                 ),
               ),
             ),
-    )],
+          ],
         ),
       ),
     );

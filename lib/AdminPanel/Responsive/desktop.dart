@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../AdminLogin/admin_login.dart';
 import '../screens/Dashboard.dart';
 import '../screens/history.dart';
 import '../screens/settings.dart';
@@ -86,7 +87,12 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                       Icon(Icons.account_circle, size: 35),
                       SizedBox(width: 10),
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => EmailLogin()),
+                          );
+                        },
                         label: Text(
                           "LOGOUT",
                           style: TextStyle(color: Colors.white),

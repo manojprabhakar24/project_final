@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../../AdminLogin/admin_login.dart';
 import '../screens/Dashboard.dart';
 import '../screens/history.dart';
 
@@ -16,8 +18,6 @@ class MobileScaffold extends StatefulWidget {
 class _MobileScaffoldState extends State<MobileScaffold> {
   var tilePadding = const EdgeInsets.only(left: 8.0, right: 8, top: 8);
 
-
-
   bool showHistory = false;
   bool showDashboard = false;
   bool showSettings = false;
@@ -26,180 +26,139 @@ class _MobileScaffoldState extends State<MobileScaffold> {
   bool isHistorySelected = false;
   bool isSettingsSelected = false;
 
+  void closeDrawer() {
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(children: [
-          Image.asset(
-            'assets/Scissors-image-remove.png',
-            height: 50,
-            width: 50,
-            fit: BoxFit.cover,
+        title: Text(
+          "Scissor's Salon",
+          style: GoogleFonts.openSans(
+            textStyle: TextStyle(
+              fontWeight:FontWeight.bold ,
+              fontSize: 25,
+            ),
           ),
-          Text(
-            "Scissor's",
-            style: TextStyle(fontSize: 25),
-          ),
-        ]),
+        ),
         actions: <Widget>[
-          Icon(Icons.account_circle,size: 35),
-
+          Icon(Icons.account_circle, size: 35),
+          SizedBox(width: 10),
           ElevatedButton.icon(
-            onPressed: () {},
-            label: Text("LOGOUT"),
-            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => EmailLogin()),
+              );
+            },
+            label: Text(
+              "LOGOUT",
+              style: TextStyle(color: Colors.white),
+            ),
+            icon: Icon(Icons.exit_to_app, color: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.brown[300],
+            ),
           ),
+          SizedBox(width: 10),
         ],
       ),
       drawer: Drawer(
-        backgroundColor: Colors.white,
-        elevation: 10,
+        shape: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
-            Padding(padding: EdgeInsets.symmetric(vertical: 25)),
-            Text(
-              "Welcome Admin",
-              style: TextStyle(fontSize: 25),
-            ),
-            Divider(
-              thickness: 3,
-              indent: 15,
-              endIndent: 15,
-            ),
-
-            Padding(
-              padding: tilePadding,
-              child: ListTile(
-                title: ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      showDashboard = true;
-                      showHistory = false;
-                      showSettings = false;
-                      isDashboardSelected = true;
-                      isHistorySelected = false;
-                      isSettingsSelected = false;
-                    });
-                  },
-                  icon: Icon(Icons.home_outlined,
-                      color: isDashboardSelected
-                          ? Colors.white
-                          : Colors.black),
-                  label: Text(
-                    "DASHBOARD",
-                    style: TextStyle(
-                        color: isDashboardSelected
-                            ? Colors.white
-                            : Colors.black),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: isDashboardSelected ? Colors.indigo : null,
-                    onPrimary: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: tilePadding,
-              child: ListTile(
-                title: ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      showDashboard = false;
-                      showHistory = true;
-                      showSettings = false;
-                      isDashboardSelected = false;
-                      isHistorySelected = true;
-                      isSettingsSelected = false;
-                    });
-                  },
-                  icon: Icon(Icons.history,
-                      color:
-                      isHistorySelected ? Colors.white : Colors.black),
-                  label: Text(
-                    "HISTORY",
-                    style: TextStyle(
-                        color: isHistorySelected
-                            ? Colors.white
-                            : Colors.black),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: isHistorySelected ? Colors.indigo : null,
-                    onPrimary: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: tilePadding,
-              child: ListTile(
-                title: ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      showDashboard = false;
-                      showHistory = false;
-                      showSettings = true;
-                      isDashboardSelected = false;
-                      isHistorySelected = false;
-                      isSettingsSelected = true;
-                    });
-                  },
-                  icon: Icon(Icons.settings,
-                      color:
-                      isSettingsSelected ? Colors.white : Colors.black),
-                  label: Text("SETTINGS",
+            DrawerHeader(
+              child: Container(
+                width: double.infinity,
+                color: Colors.brown[200],
+                child: Column(
+                  children: [
+                    Image.asset(
+                      "assets/Scissors-image-remove.png",
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.contain,
+                    ),
+                    Text(
+                      "Scissors",
                       style: TextStyle(
-                          color: isSettingsSelected
-                              ? Colors.white
-                              : Colors.black)),
-                  style: ElevatedButton.styleFrom(
-                    primary: isSettingsSelected ? Colors.indigo : null,
-                    onPrimary: Colors.white,
-                  ),
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
+            buildDrawerTile("DASHBOARD", Icons.home_outlined, isDashboardSelected, () {
+              updateSelected(true, false, false);
+              closeDrawer();
+            }),
+            buildDrawerTile("HISTORY", Icons.history, isHistorySelected, () {
+              updateSelected(false, true, false);
+              closeDrawer();
+            }),
+            buildDrawerTile("SETTINGS", Icons.settings, isSettingsSelected, () {
+              updateSelected(false, false, true);
+              closeDrawer();
+            }),
           ],
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: Colors.blue),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                labelText: 'Search Bar',
-                hintText: 'Type here',
-                prefixIcon: Icon(Icons.search_rounded),
-              ),
-            ),
-            Flexible(
-              child: Column(
-                children: [
-                  if (showDashboard)
-                    Expanded(
-                      child: Dashboard(),
-                    ),
-                  if (showHistory)
-                    Expanded(
-                      child: HistoryScreen(),
-                    ),
-                  if (showSettings)
-                    Expanded(
-                      child: Setting(),
-                    )
-                ],
+                child: Column(
+                  children: [
+                    if (isDashboardSelected) Expanded(child: Dashboard()),
+                    if (isHistorySelected) Expanded(child: HistoryScreen()),
+                    if (isSettingsSelected) Expanded(child: Setting())
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget buildDrawerTile(String title, IconData icon, bool isSelected, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListTile(
+        title: ElevatedButton.icon(
+          onPressed: onTap,
+          icon: Icon(icon, color: isSelected ? Colors.white : Colors.black),
+          label: Text(
+            title,
+            style: TextStyle(color: isSelected ? Colors.white : Colors.black),
+          ),
+          style: ElevatedButton.styleFrom(
+            primary: isSelected ? Colors.brown[300] : null,
+            onPrimary: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void updateSelected(bool dashboard, bool history, bool settings) {
+    setState(() {
+      isDashboardSelected = dashboard;
+      isHistorySelected = history;
+      isSettingsSelected = settings;
+    });
   }
 }

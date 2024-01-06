@@ -47,6 +47,7 @@ dependencies:
   http: ^0.13.6
   firebase_storage: ^11.5.6
   marquee: ^2.2.3
+  fluttertoast: ^8.2.4
 
 
 dev_dependencies:
@@ -77,6 +78,7 @@ flutter:
     - assets/vinod.jpg
     - assets/bhatt.jpg
     - assets/john dee.jpg
+    - assets/first.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

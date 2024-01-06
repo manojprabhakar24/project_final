@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../AdminLogin/admin_login.dart';
 import '../../AdminPanel/Responsive/desktop.dart';
 import '../../AdminPanel/Responsive/mobile.dart';
 import '../../AdminPanel/Responsive/responsive_layout.dart';
@@ -92,11 +93,8 @@ class WelcomeScreen extends StatelessWidget {
                         child: IconButton(
                             onPressed:() {
                               Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) =>ResponsiveLayout(
-                                    mobileBody: MobileScaffold(),
-                                    tabletBody: TabletScaffold(),
-                                    desktopBody: DesktopScaffold(),
-                                  )));
+                                  builder: (context) =>EmailLogin()
+                                  ));
                             },
                             icon: Icon(Icons.admin_panel_settings_outlined,size:65,color:Colors.black)) ,
                       ),
