@@ -9,6 +9,7 @@ class Setting extends StatefulWidget {
   @override
   State<Setting> createState() => _SettingState();
 }
+
 class _SettingState extends State<Setting> {
   int selectedStylist = 0;
 
@@ -30,92 +31,77 @@ class _SettingState extends State<Setting> {
             color: Colors.black,
           ),
           SizedBox(height: 10),
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            selectedStylist = 1;
-                          });
-                        },
-                        child: Text(
-                          "Add Services",
-                          style: TextStyle(
-                            color: selectedStylist == 1
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: selectedStylist == 1
-                              ? Colors.indigo
-                              : Colors.white,
-                          onPrimary: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            vertical: 12.0, // Adjusted padding
-                            horizontal: 24.0,
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            selectedStylist = 2;
-                          });
-                        },
-                        child: Text(
-                          "Add Stylist",
-                          style: TextStyle(
-                            color: selectedStylist == 2
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: selectedStylist == 2
-                              ? Colors.indigo
-                              : Colors.white,
-                          onPrimary: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            vertical: 12.0, // Adjusted padding
-                            horizontal: 24.0,
-                          ),
-                        ),
-                      ),
-                    ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    selectedStylist = 1;
+                  });
+                },
+                child: Text(
+                  "Add Services",
+                  style: TextStyle(
+                    color: selectedStylist == 1 ? Colors.white : Colors.black,
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: selectedStylist == 1
-                      ? Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ServiceForm(
-                      addServiceToListScreen: (Services) {},
-                    ),
-                  )
-                      : selectedStylist == 2
-                      ? Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: StylistForm(
-                      addServiceToListScreen: (Services) {},
-                    ),
-                  )
-                      : const SizedBox(),
+                style: ElevatedButton.styleFrom(
+                  primary: selectedStylist == 1 ? Colors.indigo : Colors.white,
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 12.0,
+                  ),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 10), // Adjust the spacing between buttons
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    selectedStylist = 2;
+                  });
+                },
+                child: Text(
+                  "Add Stylist",
+                  style: TextStyle(
+                    color: selectedStylist == 2 ? Colors.white : Colors.black,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: selectedStylist == 2 ? Colors.indigo : Colors.white,
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 24.0,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10), // Adjust the spacing between buttons and the form
+          Expanded(
+            child: selectedStylist == 1
+                ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ServiceForm(
+                addServiceToListScreen: (Services) {},
+              ),
+            )
+                : selectedStylist == 2
+                ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: StylistForm(
+                addServiceToListScreen: (Services) {},
+              ),
+            )
+                : const SizedBox(),
           ),
         ],
       ),

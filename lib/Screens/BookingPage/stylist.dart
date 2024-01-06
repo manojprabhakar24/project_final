@@ -109,24 +109,26 @@ class _MyApp1State extends State<MyApp1> {
               child: ListView.builder(
                 itemCount: stylistData.length,
                 itemBuilder: (context, index) {
-                  return StylistCard(
-                    stylist: stylistData[index],
-                    onSelect: (selectedStylist) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Stylist1(
-                            stylistName: selectedStylist['stylistName'] as String? ?? '',
-                            stylistImage: selectedStylist['imageLink'] as String? ?? '',
-                            selectedServices: widget.selectedServices,
-                            totalAmount: widget.totalAmount,
-                            expertise: selectedStylist['expertise'] as String? ?? '',
-                            stylist: selectedStylist,
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0), // Adjust the vertical spacing as needed
+                    child: StylistCard(
+                      stylist: stylistData[index],
+                      onSelect: (selectedStylist) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Stylist1(
+                              stylistName: selectedStylist['stylistName'] as String? ?? '',
+                              stylistImage: selectedStylist['imageLink'] as String? ?? '',
+                              selectedServices: widget.selectedServices,
+                              totalAmount: widget.totalAmount,
+                              expertise: selectedStylist['expertise'] as String? ?? '',
+                              stylist: selectedStylist,
+                            ),
                           ),
-                        ),
-                      );
-
-                    },
+                        );
+                      },
+                    ),
                   );
                 },
               ),
@@ -150,10 +152,10 @@ class StylistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
-      widthFactor: 0.6, // Adjust the fraction to your desired width
+      widthFactor: 0.6,
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,11 +163,11 @@ class StylistCard extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(10),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(10),
                 child: Image.network(
                   stylist['imageLink'] as String? ?? '',
-                  width: 100.0, // Set your desired image width here
-                  height: 100.0, // Set your desired image height here
+                  width: 100.0,
+                  height: 100.0,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -193,13 +195,23 @@ class StylistCard extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Spacer(),
-                        ElevatedButton(
-                          onPressed: () {
-                            onSelect(stylist); // Pass the selected stylist data
-                          },
-                          child: Text('Select'),
+                        Tooltip(
+                          message: 'Select Stylist', // Tooltip message
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              onSelect(stylist);
+                            },
+                            icon: Icon(Icons.arrow_forward),
+                            label: Text(''), // Empty label
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 16,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -213,3 +225,5 @@ class StylistCard extends StatelessWidget {
     );
   }
 }
+
+
