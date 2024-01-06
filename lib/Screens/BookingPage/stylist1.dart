@@ -6,18 +6,21 @@ import '../../models/service_list.dart';
 import '../Otp Page/phone_otp.dart';
 
 
-
 class Stylist1 extends StatefulWidget {
   final String stylistName;
   final List<Services> selectedServices;
   final double totalAmount;
+  final String stylistImage; // Define stylistImage property
 
   Stylist1({
     Key? key,
     required this.stylistName,
     required this.selectedServices,
-    required this.totalAmount, required Map<String, dynamic> stylist, required void Function(Map<String, dynamic> selectedStylist) onStylistSelected,
+    required this.totalAmount,
+    required this.stylistImage, required Map<String, dynamic> stylist, required String expertise, // Include stylistImage in the constructor
   }) : super(key: key);
+
+// ... rest of your class code
 
 
   @override
@@ -25,6 +28,13 @@ class Stylist1 extends StatefulWidget {
 }
 
 class _Stylist1State extends State<Stylist1> {
+  late String stylistImage;
+
+  @override
+  void initState() {
+    super.initState();
+    stylistImage = widget.stylistImage;
+  }
   DateTime selectedDate = DateTime.now();
   Map<String, Color> buttonColors = {
     '10-11AM': Colors.green,
@@ -71,18 +81,17 @@ class _Stylist1State extends State<Stylist1> {
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
               ),
-              Row(
-                children: [
-                  Padding(padding: EdgeInsets.only(left: 30)),
-                  ClipRRect(
-                    child: Image.asset(
-                      'assets/Scissors-image-remove.png',
-                      height: 80,
-                      width: 80,
-                    ),
-                  ),
-                ],
+        Row(
+          children: [
+            Padding(padding: EdgeInsets.only(left: 30)),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(
+                stylistImage, // Use the stylistImage here
+                height: 100,
+                width: 130,
               ),
+            ),
               Row(
                 children: [
                   Padding(padding: EdgeInsets.only(left: 30)),
@@ -197,9 +206,9 @@ class _Stylist1State extends State<Stylist1> {
               ),
             ],
           ),
-        ),
-      ),
-    );
+
+
+    ]))));
   }
 
   Future<void> _selectDate(BuildContext context) async {

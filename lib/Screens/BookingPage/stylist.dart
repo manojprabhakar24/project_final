@@ -41,19 +41,7 @@ class _MyApp1State extends State<MyApp1> {
       print('Error fetching data: $e');
     }
   }
-  void handleStylistSelected(Map<String, dynamic> selectedStylist) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Stylist1(
-          stylistName: selectedStylist['stylistName'] as String? ?? '',
-          selectedServices: [], // Pass your selected services
-          totalAmount: 0, // Pass your total amount
-          stylist: selectedStylist, onStylistSelected: (Map<String, dynamic> selectedStylist) {  }, // Pass the stylist details to Stylist1
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -123,14 +111,26 @@ class _MyApp1State extends State<MyApp1> {
                 itemBuilder: (context, index) {
                   return StylistCard(
                     stylist: stylistData[index],
-                    stylistScreen: Stylist1(
-                      stylist: stylistData[index],
-                      onStylistSelected: handleStylistSelected, stylistName: '', selectedServices: [], totalAmount: 0,
+                    onSelect: (selectedStylist) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Stylist1(
+                            stylistName: selectedStylist['stylistName'] as String? ?? '',
+                            stylistImage: selectedStylist['imageLink'] as String? ?? '',
+                            selectedServices: widget.selectedServices,
+                            totalAmount: widget.totalAmount,
+                            expertise: selectedStylist['expertise'] as String? ?? '',
+                            stylist: selectedStylist,
+                          ),
+                        ),
+                      );
 
-                    ), // Replace with your stylist screen widget
+                    },
                   );
                 },
               ),
+
             ),
           ],
         ),
@@ -138,85 +138,78 @@ class _MyApp1State extends State<MyApp1> {
     );
   }
 }
-
 class StylistCard extends StatelessWidget {
   final Map<String, dynamic> stylist;
-  final Widget stylistScreen;
+  final Function(Map<String, dynamic> selectedStylist) onSelect;
 
   StylistCard({
     required this.stylist,
-    required this.stylistScreen,
+    required this.onSelect,
   });
 
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
-        widthFactor: 0.6, // Adjust the fraction to your desired width
-        child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(40),
-                    child: Image.network(
-                      stylist['imageLink'] as String? ?? '',
-                      width: 100.0, // Set your desired image width here
-                      height: 100.0, // Set your desired image height here
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+      widthFactor: 0.6, // Adjust the fraction to your desired width
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: Image.network(
+                  stylist['imageLink'] as String? ?? '',
+                  width: 100.0, // Set your desired image width here
+                  height: 100.0, // Set your desired image height here
+                  fit: BoxFit.cover,
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 10, left: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          stylist['stylistName'] as String? ?? '',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          stylist['expertise'] as String? ?? '',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Spacer(),
-                            ElevatedButton(
-                              onPressed: () {
-                                  Navigator.push(
-                                        context,
-                                         MaterialPageRoute(
-                                          builder: (context) => stylistScreen,
-                                      ),
-                                    );
-                            },
-
-
-                              child: Text('Select'),
-                            ),
-                          ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(top: 10, left: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      stylist['stylistName'] as String? ?? '',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      stylist['expertise'] as String? ?? '',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Spacer(),
+                        ElevatedButton(
+                          onPressed: () {
+                            onSelect(stylist); // Pass the selected stylist data
+                          },
+                          child: Text('Select'),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            )
-        )
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
