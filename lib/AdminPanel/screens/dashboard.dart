@@ -1,22 +1,221 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  _DashboardState createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
   late Stream<QuerySnapshot> _customersStream;
-  Map<String, List<Map<String, dynamic>>> stylistAppointments = {};
+  late Map<String, List<DocumentSnapshot>> stylistAppointments;
   String selectedStylist = '';
-  bool isLoading = true;
-  Future<void> updateAppointmentStatus(String stylistName, String status) async {
+  Set<String> lockedAppointments = Set();
+  bool isAcceptButtonDisabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _customersStream =
+        FirebaseFirestore.instance.collection('Users').snapshots();
+  }
+
+  void updateDashboardState() {
+    setState(() {});
+  }
+
+  Future<void> markServiceDone(
+      String documentID,
+      bool isServiceDone,
+      Function(Map<String, dynamic> appointmentData) onServiceDone,
+      ) async {
+    try {
+      final appointmentSnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(documentID)
+          .get();
+      final appointmentData =
+      appointmentSnapshot.data() as Map<String, dynamic>;
+
+      await FirebaseFirestore.instance
+          .collection('History')
+          .doc(documentID)
+          .set({
+        ...appointmentData,
+        'completed': isServiceDone,
+      });
+
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(documentID)
+          .update({
+        'completed': isServiceDone,
+      });
+
+      onServiceDone(appointmentData);
+
+      // Stay on the same page by refreshing the UI
+      setState(() {});
+    } catch (error) {
+      print("Error marking service done: $error");
+    }
+  }
+
+  Future<void> markServiceNotDone(
+      String documentID,
+      Function(Map<String, dynamic> appointmentData) onServiceNotDone,
+      ) async {
+    try {
+      final appointmentSnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(documentID)
+          .get();
+      final appointmentData =
+      appointmentSnapshot.data() as Map<String, dynamic>;
+
+      await FirebaseFirestore.instance
+          .collection('History')
+          .doc(documentID)
+          .set({
+        ...appointmentData,
+        'completed': false,
+        'status': 'declined', // Set status as 'declined'
+      });
+
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(documentID)
+          .delete();
+
+      onServiceNotDone(appointmentData);
+      setState(() {
+        lockedAppointments.add(documentID);
+      });
+    } catch (error) {
+      print("Error marking service not done: $error");
+    }
+  }
+
+  Map<String, List<DocumentSnapshot>> groupAppointmentsByStylist(
+      List<DocumentSnapshot> appointments,
+      ) {
+    Map<String, List<DocumentSnapshot>> stylistAppointments = {};
+
+    for (var appointment in appointments) {
+      final data = appointment.data() as Map<String, dynamic>;
+      final stylistName = data['stylistName'];
+
+      if (!stylistAppointments.containsKey(stylistName)) {
+        stylistAppointments[stylistName] = [];
+      }
+
+      stylistAppointments[stylistName]!.add(appointment);
+    }
+
+    return stylistAppointments;
+  }
+
+  Future<void> updateAppointmentStatusAndSendTwilio(
+      String stylistName,
+      String status,
+      Map<String, dynamic> appointment,
+      ) async {
+    try {
+      // Perform the update in Firestore
+      await updateAppointmentStatus(stylistName, status);
+
+      // Fetch the user's phone number from Firestore
+      String userPhoneNumber = '+91' + appointment['phoneNumber'];
+
+      // Send Twilio SMS
+      String message = status == 'accepted'
+          ? 'Your appointment with $stylistName has been accepted.'
+          : 'Your appointment with $stylistName has been declined.';
+
+      await sendTwilioSMS(
+        to: userPhoneNumber,
+        body: message,
+        stylistName: stylistName,
+      );
+
+      // Fetch updated appointments after the update
+      fetchAppointmentsByStylist(stylistName);
+    } catch (error) {
+      print('Error updating appointment status and sending SMS: $error');
+    }
+  }
+
+  Future<void> sendTwilioSMS({
+    required String to,
+    required String body,
+    required String stylistName,
+  }) async {
+    try {
+      final accountSid = 'AC45d39b3d898206fef90d4ed67fb4a7bc';
+      final authToken = 'e11f5cbb9d964b9cfe63d93fa9f97da6';
+      final twilioNumber = '12816168209';
+
+      // Fetch the latest appointment details from Firestore based on stylist name
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('stylistName', isEqualTo: stylistName)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final appointmentDetails =
+        querySnapshot.docs.first.data() as Map<String, dynamic>;
+
+        // Construct Twilio API endpoint
+        final apiUrl =
+            'https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json';
+
+        // Construct message body with appointment details
+        final formattedBody = '$body\n\nAppointment Details:\n'
+            'Customer Name: ${appointmentDetails['name']}\n'
+            'Phone Number: ${appointmentDetails['phoneNumber']}\n'
+            'Booking Slot: ${appointmentDetails['selectedTimeSlots']}\n'
+            'Date: ${DateFormat('yyyy-MM-dd').format(appointmentDetails['selectedDate']?.toDate() ?? DateTime.now())}';
+
+        // Make an HTTP POST request to Twilio API
+        final response = await http.post(
+          Uri.parse(apiUrl),
+          headers: {
+            'Authorization':
+            'Basic ' + base64Encode(utf8.encode('$accountSid:$authToken')),
+          },
+          body: {
+            'From': twilioNumber,
+            'To': to,
+            'Body': formattedBody,
+          },
+        );
+
+        // Check the response status
+        if (response.statusCode == 201) {
+          print('SMS sent successfully');
+        } else {
+          print('Failed to send SMS. Status code: ${response.statusCode}');
+          print('Response body: ${response.body}');
+        }
+      } else {
+        print('No appointment found for stylist $stylistName');
+      }
+    } catch (error) {
+      print('Error sending SMS: $error');
+    }
+  }
+
+  Future<void> updateAppointmentStatus(
+      String stylistName,
+      String status,
+      ) async {
     try {
       CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('Users');
@@ -48,101 +247,6 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  Future<void> sendTwilioSMS({
-    required String to,
-    required String body,
-    required String stylistName,
-  }) async {
-    try {
-      final accountSid = 'AC8032394725a51f80a26427f0ecd06af6';
-      final authToken = 'c77948c1e2e06069b9b09d4abce4005b';
-      final twilioNumber = '+16508648721';
-
-      // Fetch the latest appointment details from Firestore based on stylist name
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('Users')
-          .where('stylistName', isEqualTo: stylistName)
-          .limit(1)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        final appointmentDetails =
-        querySnapshot.docs.first.data() as Map<String, dynamic>;
-
-        // Construct Twilio API endpoint
-        final apiUrl =
-            'https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json';
-
-        // Construct message body with appointment details
-        final formattedBody = '$body\n\nAppointment Details:\n'
-            'Customer Name: ${appointmentDetails['name']}\n'
-            'Phone Number: ${appointmentDetails['phoneNumber']}\n'
-            'Booking Slot: ${appointmentDetails['selectedTimeSlots']}\n'
-            'Date: ${DateFormat('yyyy-MM-dd').format(appointmentDetails['selectedDate']?.toDate() ?? DateTime.now())}';
-
-        // Make an HTTP POST request to Twilio API
-        final response = await http.post(
-          Uri.parse('https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json'),
-          headers: {
-            'Authorization': 'Basic ' + base64Encode(utf8.encode('$accountSid:$authToken')),
-          },
-          body: {
-            'From': twilioNumber,
-            'To': to,
-            'Body': formattedBody,
-          },
-        );
-
-        // Check the response status
-        if (response.statusCode == 201) {
-          print('SMS sent successfully');
-        } else {
-          print('Failed to send SMS. Status code: ${response.statusCode}');
-          print('Response body: ${response.body}');
-        }
-      } else {
-        print('No appointment found for stylist $stylistName');
-      }
-    } catch (error) {
-      print('Error sending SMS: $error');
-    }
-  }
-
-  Future<void> updateAppointmentStatusAndSendTwilio(
-      String stylistName, String status, Map<String, dynamic> appointment) async {
-    try {
-      // Perform the update in Firestore
-      await updateAppointmentStatus(stylistName, status);
-
-      // Fetch the user's phone number from Firestore
-      String userPhoneNumber ='+91' + appointment['phoneNumber'];
-
-      // Send Twilio SMS
-      String message = status == 'accepted'
-          ? 'Your appointment with $stylistName has been accepted.'
-          : 'Your appointment with $stylistName has been declined.';
-
-      await sendTwilioSMS(
-        to: userPhoneNumber,
-        body: message,
-        stylistName: stylistName,
-      );
-
-      // Fetch updated appointments after the update
-      fetchAppointmentsByStylist(stylistName);
-    } catch (error) {
-      print('Error updating appointment status and sending SMS: $error');
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _customersStream = FirebaseFirestore.instance.collection('Users').snapshots();
-
-    fetchAllAppointments();
-  }
-
   void fetchAllAppointments() async {
     try {
       QuerySnapshot querySnapshot =
@@ -156,220 +260,244 @@ class _DashboardState extends State<Dashboard> {
             stylistAppointments[stylistName] = [];
           }
           stylistAppointments[stylistName]!.add(
-            doc.data() as Map<String, dynamic>,
+            doc,
           );
         }
-        isLoading = false; // Data fetched, set loading flag to false
       });
     } catch (error) {
       print("Error fetching appointments: $error");
-      setState(() {
-        isLoading = false;
-        // Update loading flag even if an error occurs
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: stylistAppointments.keys.map((stylistName) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    // Adjust the horizontal padding as needed
-                    child: ElevatedButton(
-                      onPressed: () => fetchAppointmentsByStylist(stylistName),
-                      child: Text(stylistName),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          stylistName == selectedStylist
-                              ? Colors.brown
-                              : Colors.blue, // Change color based on selection
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _customersStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final appointments = snapshot.data?.docs ?? [];
+          stylistAppointments = groupAppointmentsByStylist(appointments);
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Admin Dashboard",
+                      style: GoogleFonts.openSans(
+                        textStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
                         ),
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-            ),
-            SizedBox(height: 20),
-            if (isLoading) // Display loading indicator while fetching data
-              Center(
-                child: CircularProgressIndicator(),
-              ),
-            if (!isLoading &&
-                selectedStylist.isNotEmpty &&
-                stylistAppointments.containsKey(selectedStylist))
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey),
-                  color: Colors.deepOrange[100],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(
-                      'Upcoming Appointments for $selectedStylist',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    for (var stylistName in stylistAppointments.keys)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedStylist = stylistName;
+                          });
+                        },
+                        child: Text(
+                          stylistName,
+                          style: TextStyle(
+                            color: selectedStylist == stylistName
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: selectedStylist == stylistName
+                              ? Colors.brown[300]
+                              : null,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Column(
-                      children: stylistAppointments[selectedStylist]!.map(
-                            (appointment) {
-                          DateTime date = DateTime.now(); // Default date or handle null
-                          if (appointment['selectedDate'] != null &&
-                              appointment['selectedDate'] is Timestamp) {
-                            date = (appointment['selectedDate'] as Timestamp)
-                                .toDate();
-                          }
-                          List<dynamic> selectedServicesAppointment =
-                              appointment['selectedServices'] ?? [];
-                          List<String> selectedServices =
-                          selectedServicesAppointment
-                              .map((service) =>
-                          '${service['name']}-${service['price']}')
-                              .toList();
-
-                          return Container(
-                            margin: EdgeInsets.symmetric(vertical: 16),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black, width: 1),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
-                              ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                if (selectedStylist.isNotEmpty &&
+                    (stylistAppointments[selectedStylist] == null ||
+                        stylistAppointments[selectedStylist]!.isEmpty))
+                  Center(
+                    child: Text('No Appointments'),
+                  )
+                else if (selectedStylist.isNotEmpty)
+                  Container(
+                    color: Colors.grey[200],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            'Upcoming Appointments - $selectedStylist',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.all(16),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Customer Name: ${appointment['name']}'),
-                                  Text('Phone Number: ${appointment['phoneNumber']}'),
-                                  Text('Booking Slot: ${appointment['selectedTimeSlots']}'),
-                                  Text('Selected Services: ${selectedServices.join(', ')}'),
-                                  Text('Total Amount: ${appointment['totalAmount']}'),
-                                  Text('Date: ${DateFormat('yyyy-MM-dd').format(date)}'),
-                                ],
-                              ),
-                              trailing: Column(
-                                children: [
-                                  Flexible(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                          ),
+                        ),
+                        // Inside the ListView.builder
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: stylistAppointments[selectedStylist]!.length,
+                          itemBuilder: (context, index) {
+                            final appointment =
+                            stylistAppointments[selectedStylist]![index];
+
+                            final isCompleted =
+                                appointment.data() is Map<String, dynamic> &&
+                                    (appointment.data() as Map<String, dynamic>)
+                                        .containsKey('completed') &&
+                                    (appointment.data()
+                                    as Map<String, dynamic>)['completed'];
+
+                            final isLocked =
+                            lockedAppointments.contains(appointment.id);
+
+                            return isCompleted
+                                ? Container()
+                                : Card(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: ListTile(
+                                title: Text(appointment['name']),
+                                subtitle: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Booking Slot: ${appointment['selectedTimeSlots']}',
+                                    ),
+                                    Text(
+                                      'Total Amount: ${appointment['totalAmount']}',
+                                    ),
+                                    Text(
+                                      'Date: ${DateFormat('yyyy-MM-dd HH:mm').format((appointment['selectedDate'] as Timestamp).toDate())}',
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
-                                          onPressed: () async {
-                                            // Accept the appointment and send Twilio SMS
-                                            await updateAppointmentStatusAndSendTwilio(
-                                              selectedStylist,
-                                              'accepted',
-                                              appointment,
-                                            );
+                                          onPressed: () {
+                                            if (!lockedAppointments
+                                                .contains(
+                                                appointment.id) &&
+                                                !isCompleted) {
+                                              // Accept button logic
+                                              updateAppointmentStatusAndSendTwilio(
+                                                selectedStylist,
+                                                'accepted',
+                                                appointment.data()
+                                                as Map<String, dynamic>,
+                                              );
+                                              setState(() {
+                                                lockedAppointments
+                                                    .add(appointment.id);
+                                                isAcceptButtonDisabled = true; // Disable the Accept button
+                                              });
+                                            }
                                           },
                                           child: Text('Accept'),
+                                          style: ElevatedButton.styleFrom(
+                                            onPrimary: Colors.grey,
+                                            // Change color when disabled
+                                            primary: Colors
+                                                .blue, // Change color when enabled
+                                          ),
                                         ),
-                                        SizedBox(width: 5),
                                         ElevatedButton(
-                                          onPressed: () async {
-                                            // Decline the appointment and send Twilio SMS
-                                            await updateAppointmentStatusAndSendTwilio(
-                                              selectedStylist,
-                                              'declined',
-                                              appointment,
-                                            );
+                                          onPressed: () {
+                                            if (!lockedAppointments
+                                                .contains(
+                                                appointment.id) &&
+                                                !isCompleted) {
+                                              // Decline button logic
+                                              updateAppointmentStatusAndSendTwilio(
+                                                selectedStylist,
+                                                'declined',
+                                                appointment.data()
+                                                as Map<String, dynamic>,
+                                              );
+                                              setState(() {
+                                                lockedAppointments
+                                                    .add(appointment.id);
+                                              });
+                                            }
                                           },
                                           child: Text('Decline'),
+                                          style: ElevatedButton.styleFrom(
+                                            onPrimary: Colors.grey,
+                                            // Change color when disabled
+                                            primary: Colors
+                                                .red, // Change color when enabled
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  SizedBox(height: 3),
-                                  Flexible(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
-                                          onPressed: () async {
-
+                                          onPressed: () {
+                                            markServiceDone(
+                                              appointment.id,
+                                              true,
+                                                  (appointmentData) {
+                                                updateDashboardState();
+                                              },
+                                            );
                                           },
                                           child: Text('Service Done'),
                                         ),
-                                        ElevatedButton.icon(
-                                          onPressed: () async {
-
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            if (!isLocked && !isCompleted) {
+                                              markServiceNotDone(
+                                                appointment.id,
+                                                    (appointmentData) {
+                                                  updateDashboardState();
+                                                },
+                                              );
+                                            }
                                           },
-                                          icon: Icon(Icons.check, color: Colors.red),
-                                          label: Text("Not Done"),
+                                          child: Text('Service not Done'),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ).toList(),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-          ],
-        ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
-  }
-
-  // Rest of your code...
-
-
-
-  Future<void> markServiceDone(
-      String documentID, bool isServiceDone, Function(Map<String, dynamic> appointmentData) onServiceDone) async {
-    try {
-      final appointmentSnapshot = await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(documentID)
-          .get();
-      final appointmentData = appointmentSnapshot.data() as Map<String, dynamic>;
-
-      // Move appointment to history by copying it to the 'History' collection
-      await FirebaseFirestore.instance
-          .collection('History')
-          .doc(documentID)
-          .set({
-        ...appointmentData,
-        'completed': isServiceDone,
-      });
-
-      // Mark the appointment as completed or not done in the 'Users' collection
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(documentID)
-          .update({
-        'completed': isServiceDone,
-      });
-
-      // Call the callback function to pass the appointment data
-      onServiceDone(appointmentData);
-    } catch (error) {
-      print("Error marking service done: $error");
-    }
   }
 }

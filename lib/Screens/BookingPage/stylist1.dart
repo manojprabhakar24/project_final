@@ -76,19 +76,54 @@ class _Stylist1State extends State<Stylist1> {
           decoration: BoxDecoration(
             color: Color.fromRGBO(255, 255, 255, 0.8),
           ),
-          child: Column(
+          child:Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: 10.0),
-              ),
               Row(
                 children: [
-                  Padding(padding: EdgeInsets.only(left: 30)),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(5, 10, 10, 0),
+                  ),
+                  Image.asset(
+                    'assets/Scissors-image-remove.png',
+                    width: 100,
+                    height: 100,
+                  ),
+                ],
+              ),
+              Row(
+                  children: [
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 17.0)),
+                    Text(
+                      "Scissor's",
+                      style: GoogleFonts.openSans(
+                        textStyle: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Your Stylist",
+                    style: GoogleFonts.openSans(
+                      textStyle: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
 
               Expanded(
-                child: Center(
+                child: SingleChildScrollView(
                   child: Container(
-                    height: 630,
+                    height: 634,
                     width: 400,
                     child: Card(
                       margin: EdgeInsets.all(20),
@@ -187,7 +222,7 @@ class _Stylist1State extends State<Stylist1> {
           ),
 
 
-    ]))));
+    )));
   }
 
   Future<void> _selectDate(BuildContext context) async {

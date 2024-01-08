@@ -97,6 +97,21 @@ class _MyApp1State extends State<MyApp1> {
                         ),
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Stylist List",
+                          style: GoogleFonts.openSans(
+                            textStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -151,72 +166,66 @@ class StylistCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      widthFactor: 0.6,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+    return Card(
+      elevation: 4, // Add elevation for a slight shadow effect
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Adjust margin
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0), // Add padding for inner content
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  stylist['imageLink'] as String? ?? '',
-                  width: 100.0,
-                  height: 100.0,
-                  fit: BoxFit.cover,
-                ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                stylist['imageLink'] as String? ?? '',
+                width: 100.0,
+                height: 100.0,
+                fit: BoxFit.cover,
               ),
             ),
+            SizedBox(width: 16), // Add space between image and text
             Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(top: 10, left: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      stylist['stylistName'] as String? ?? '',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    stylist['stylistName'] as String? ?? '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
                     ),
-                    SizedBox(height: 5),
-                    Text(
-                      stylist['expertise'] as String? ?? '',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    stylist['expertise'] as String? ?? '',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
                     ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Tooltip(
-                          message: 'Select Stylist', // Tooltip message
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              onSelect(stylist);
-                            },
-                            icon: Icon(Icons.arrow_forward),
-                            label: Text(''), // Empty label
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 16,
-                              ),
-                            ),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          onSelect(stylist);
+                        },
+                        icon: Icon(Icons.arrow_forward),
+                        label: Text('Select Stylist'),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
@@ -225,5 +234,3 @@ class StylistCard extends StatelessWidget {
     );
   }
 }
-
-
